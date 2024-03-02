@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'r
 import Home from './pages/home/home';
 import Login from './pages/login/login'
 import Signup from './pages/signup/signup';
+import Dashboard from './pages/dashboard/dashboard';
 
 function App() {
   return (

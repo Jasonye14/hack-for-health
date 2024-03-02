@@ -15,6 +15,7 @@
 }
 
 .form-box{
+    border-radius: 20px;
     width: 90%;
     max-width: 450px;
     position: absolute;
@@ -36,7 +37,7 @@
 }
 
 .text{
-    color: #3c009d;
+    color: #05010c;
     font-size: 48px;
     font-weight: 700;
 }
@@ -44,7 +45,7 @@
 .underline{
     width: 61px;
     height: 6px;
-    background: #3c009d;
+    background: #040108;
     border-radius: 9px;
 }
 
@@ -88,7 +89,7 @@
 }
 
 .forget-password span{
-    color: #4c00b4;
+    color: #040108;
     cursor: pointer;
 }
 
@@ -105,7 +106,7 @@
     width: 220px;
     height: 59px;
     color: #fff;
-    background: #4c00b4;
+    background: #09050f;
     border-radius: 40px;
     font-size: 19px;
     font-weight: 700;

@@ -25,6 +25,7 @@ function RoutesContent() {
         <Route path='/gemini-chat-bot' element={<></>} />
         <Route path='/history' element={<></>} />
         <Route path='/profile' element={<></>} />
+        <Route path='/my-prescriptions' element={<></>}></Route>
       </Routes>
   );
 }

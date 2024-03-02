@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase/firebaseConfig'; // Adjust this path as needed
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { Button, TextField, Container, Typography, Box, Snackbar, Alert } from '@mui/material';
+import { Button, TextField, Container, Typography, Box, Snackbar, Alert, Grid, Link } from '@mui/material';
 import { getDatabase, ref, set, get } from "firebase/database";
 
 const Signup = () => {

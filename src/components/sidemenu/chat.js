@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, List, ListItem, ListItemText, Paper, Typography } from '@mui/material';
+import { TextField, Button, List, ListItem, ListItemText, Paper, Typography, CircularProgress, Box } from '@mui/material';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const Chat = () => {
@@ -10,7 +10,6 @@ const Chat = () => {
   const genAI = new GoogleGenerativeAI("AIzaSyDilnhNZuB5EDltsTx2JgnnvsUg0mkPa1E");
 
   useEffect(() => {
-    // Scroll to the last message
     const chatList = document.getElementById('chatList');
     if (chatList) {
       chatList.scrollTop = chatList.scrollHeight;
@@ -21,8 +20,8 @@ const Chat = () => {
     if (!text.trim()) return;
 
     const userMessage = { author: 'You', text, timestamp: new Date().toLocaleTimeString() };
-    setMessages(messages => [...messages, userMessage]);
-    setInput(''); // Clear input after sending
+    setMessages((messages) => [...messages, userMessage]);
+    setInput('');
     setLoading(true);
 
     try {
@@ -32,12 +31,14 @@ const Chat = () => {
       const response = await result.response;
       const aiText = await response.text();
 
-      const aiMessage = { author: 'Gemini', text: aiText, timestamp: new Date().toLocaleTimeString() };
-      setMessages(messages => [...messages, aiMessage]);
+      setTimeout(() => {
+        const aiMessage = { author: 'Gemini', text: aiText, timestamp: new Date().toLocaleTimeString() };
+        setMessages((messages) => [...messages, aiMessage]);
+        setLoading(false);
+      }, 2000); // Adjust delay as needed or integrate with actual API call
     } catch (error) {
       console.error('Error fetching data:', error);
-      setMessages(messages => [...messages, { author: 'AI', text: "Sorry, I couldn't fetch a response.", timestamp: new Date().toLocaleTimeString() }]);
-    } finally {
+      setMessages((messages) => [...messages, { author: 'AI', text: "Sorry, I couldn't fetch a response.", timestamp: new Date().toLocaleTimeString() }]);
       setLoading(false);
     }
   };
@@ -45,11 +46,29 @@ const Chat = () => {
   const handleInputChange = (event) => setInput(event.target.value);
 
   const handleKeyPress = (event) => {
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' && !loading) {
       sendMessage(input);
       event.preventDefault();
     }
   };
+
+  const MessageItem = ({ message }) => (
+    <ListItem sx={{ display: 'flex', flexDirection: message.author === 'You' ? 'row-reverse' : 'row', mb: 1 }}>
+      <Box sx={{
+        maxWidth: '70%',
+        py: 1,
+        px: 2,
+        bgcolor: message.author === 'You' ? '#005792' : '#4A5568',
+        borderRadius: '10px',
+        color: 'white',
+        textAlign: 'left',
+      }}>
+        <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 0.5 }}>{message.author}</Typography>
+        <Typography variant="body2">{message.text}</Typography>
+        <Typography variant="caption" display="block" sx={{ mt: 0.5, fontSize: '0.7rem' }}>{message.timestamp}</Typography>
+      </Box>
+    </ListItem>
+  );
 
   return (
     <Paper sx={{
@@ -59,7 +78,7 @@ const Chat = () => {
       padding: '20px',
     }}>
       <Typography variant="h4" align="center" gutterBottom sx={{ color: '#E2E8F0' }}>
-        Gemini
+        Gemini Chat
       </Typography>
       <List id="chatList" sx={{
         maxHeight: '70vh',
@@ -71,12 +90,15 @@ const Chat = () => {
         padding: '10px',
       }}>
         {messages.map((message, index) => (
-          <ListItem key={index} sx={{ color: '#CBD5E0 !important' }}>
-            <ListItemText primary={`${message.author} at ${message.timestamp}`} secondary={message.text} />
-          </ListItem>
+          <MessageItem key={index} message={message} />
         ))}
+        {loading && (
+          <ListItem sx={{ justifyContent: 'center' }}>
+            <CircularProgress color="secondary" />
+          </ListItem>
+        )}
       </List>
-      <div>
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <TextField
           fullWidth
           variant="outlined"
@@ -103,11 +125,12 @@ const Chat = () => {
           value={input}
           onChange={handleInputChange}
           onKeyPress={handleKeyPress}
+          disabled={loading}
         />
         <Button
           variant="contained"
           sx={{
-            marginLeft: '10px',
+            ml: 2,
             backgroundColor: '#005792',
             color: 'white',
             '&:hover': {
@@ -119,7 +142,7 @@ const Chat = () => {
         >
           Send
         </Button>
-      </div>
+      </Box>
     </Paper>
   );
 };

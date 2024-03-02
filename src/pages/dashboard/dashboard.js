@@ -7,14 +7,14 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SideMenu from '../../components/sidemenu/SideMenu';
 
 
-const prescriptions = [
+const initialPrescriptions = [
   { id: 1, name: 'Drug A', details: 'Details about Drug A', dateTime: '2023-03-02 10:00', schedule: 'Every 8 hours', imageUrl: 'https://via.placeholder.com/40', expanded: false},
   { id: 2, name: 'Drug B', details: 'Details about Drug B', dateTime: '2023-03-03 10:00', schedule: 'Every 12 hours', imageUrl: 'https://via.placeholder.com/40', expanded: false},
   // Add more prescriptions here, each with their own imageUrl
 ];
 
 function Dashboard() {
-  const [expandedPanels, setExpandedPanels] = useState([]);
+  const [prescriptions, setPrescriptions] = useState(initialPrescriptions);
 
   const handleChange = (pID) => {
     const prescToModify = prescriptions.find(p => p.id === pID)

@@ -9,6 +9,7 @@ npm install @mui/icons-material @mui/material @emotion/styled @emotion/react
 npm i react-router-dom
 npm i @google/generative-ai
 npm i @mui/styles
+npm install react-scroll
 
 
 ## Available Scripts

@@ -7,6 +7,8 @@ import { getDatabase, ref, set, get } from "firebase/database";
 
 const Signup = () => {
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [password, setPassword] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -96,6 +98,26 @@ const Signup = () => {
             variant="outlined"
             margin="normal"
             required
+            label="First Name"
+            type="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <TextField
+            fullWidth
+            variant="outlined"
+            margin="normal"
+            required
+            label="Last Name"
+            type="lastName"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+          />
+          <TextField
+            fullWidth
+            variant="outlined"
+            margin="normal"
+            required
             label="Email"
             type="email"
             value={email}
@@ -114,9 +136,18 @@ const Signup = () => {
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
             Sign Up
           </Button>
+
           <Button fullWidth variant="outlined" sx={{ mt: 1, mb: 2 }} onClick={signInWithGoogle}>
-            Sign in with Google
+            Sign up with Google
           </Button>
+
+          <Grid container>
+            <Grid item xs>
+              <Link href='\login' variant="body2">
+                Already have an account?
+              </Link>
+            </Grid>
+          </Grid>
         </Box>
       </Box>
       <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>

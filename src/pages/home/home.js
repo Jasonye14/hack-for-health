@@ -213,7 +213,7 @@ const Home = () => {
                     <Box display="flex" justifyContent="center" alignItems="center">
                       <HomeIcon fontSize="large" />
                       <Typography variant="body1" style={{ marginLeft: 8 }}>
-                        Address: 123 Main St, Anytown, USA
+                        123 Main St, Anytown, USA
                       </Typography>
                     </Box>
                   </CardContent>

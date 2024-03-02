@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase/firebaseConfig'; // Adjust this path as needed
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { Button, TextField, Container, Typography, Box, Snackbar, Alert } from '@mui/material';
+import { getDatabase, ref, set, get } from "firebase/database";
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -10,14 +11,25 @@ const Signup = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const navigate = useNavigate();
+  const database = getDatabase();
 
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    // User is signed up
+    // Now, save user info in Realtime Database
+    const user = userCredential.user;
+    const usersRef = ref(database, 'users/' + user.uid);
+    await set(usersRef, {
+      email: user.email,
+      // add any other user info you'd like to store
+    });
+
       setSnackbarMessage('Signup successful. Welcome!');
       setOpenSnackbar(true);
-      navigate('/'); // Navigate to home or dashboard as needed
+      navigate('/dashboard'); // Navigate to home or dashboard as needed
+
     } catch (error) {
       console.error(error);
       // Reset previous message
@@ -47,11 +59,20 @@ const Signup = () => {
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      const user = result.user;
+      // Save user info in Realtime Database
+      const usersRef = ref(database, 'users/' + user.uid);
+      await set(usersRef, {
+        email: user.email,
+        // add any other user info you'd like to store
+      });
+
       setSnackbarMessage('Google sign-in successful. Welcome!');
       setOpenSnackbar(true);
-      navigate('/');
-    } catch (error) {
+      navigate('/dashboard');
+  } catch (error) {
       console.error(error);
       setSnackbarMessage('Google sign-in failed. Please try again.');
       setOpenSnackbar(true);

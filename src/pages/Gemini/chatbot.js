@@ -3,14 +3,15 @@ import Chatbot from '../../components/sidemenu/chat';
 import SideMenu from '../../components/sidemenu/SideMenu';
 import { Container } from '@mui/material';
 
-const Checker = () => {
+const ChatBotPage = () => {
   return (
     <>
         <SideMenu />
         <Container maxWidth="md">
+            <Chatbot />
         </Container>
     </>
   );
 };
 
-export default Checker;
+export default ChatBotPage;

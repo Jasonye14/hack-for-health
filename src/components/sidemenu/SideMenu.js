@@ -1,23 +1,26 @@
 import React, { useState } from 'react';
-import {
-  Drawer, Button, List, ListItem, ListItemIcon, ListItemText, CssBaseline, ThemeProvider, createTheme,
-  Avatar, Typography, Box, Divider
-} from '@mui/material';
+import { Drawer, Button, List, ListItem, ListItemIcon, ListItemText, Avatar, Typography, Box, Divider } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import PharmacyIcon from '@mui/icons-material/LocalPharmacy'; 
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer'; 
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'; 
 import SettingsIcon from '@mui/icons-material/Settings'; 
-
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const SideMenu = () => {
   const [state, setState] = useState({ left: false });
+  const navigate = useNavigate(); // Hook for navigation
 
   const toggleDrawer = (anchor, open) => (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
     setState({ ...state, [anchor]: open });
+  };
+
+  const handleNavigation = (path) => {
+    // Navigate to the specified path
+    navigate(path);
   };
 
   const list = (anchor) => (
@@ -29,15 +32,15 @@ const SideMenu = () => {
     >
       <Box sx={{ display: 'flex', alignItems: 'center', padding: 2 }}>
         <Avatar src="profile_pic_url_here" sx={{ marginRight: 2 }} />
-        <Typography variant="h6" color="white">
-          Your Name
-        </Typography>
+        <Typography variant="h6" color="white">Your Name</Typography>
       </Box>
       <List>
+        {/* Update the paths array to reflect the specific routes */}
         {['My Prescriptions', 'Ask AI', 'Compatibility Checker'].map((text, index) => {
           const icons = [<PharmacyIcon />, <QuestionAnswerIcon />, <CheckCircleIcon />];
+          const paths = ['/my-prescriptions', '/gemini-chat-bot', '/compatability-checker'];
           return (
-            <ListItem button key={text}>
+            <ListItem button key={text} onClick={() => handleNavigation(paths[index])}>
               <ListItemIcon>{icons[index]}</ListItemIcon>
               <ListItemText primary={text} />
             </ListItem>
@@ -46,7 +49,8 @@ const SideMenu = () => {
       </List>
       <Divider />
       <List>
-        <ListItem button key="Settings">
+        {/* Settings can navigate to a settings page if you have one */}
+        <ListItem button key="Settings" onClick={() => handleNavigation('/settings')}>
           <ListItemIcon><SettingsIcon /></ListItemIcon>
           <ListItemText primary="Settings" />
         </ListItem>
@@ -61,11 +65,7 @@ const SideMenu = () => {
           <Button onClick={toggleDrawer(anchor, true)} style={{ color: 'white', minHeight: '60px' }}>
             <MenuIcon />
           </Button>
-          <Drawer
-            anchor={anchor}
-            open={state[anchor]}
-            onClose={toggleDrawer(anchor, false)}
-          >
+          <Drawer anchor={anchor} open={state[anchor]} onClose={toggleDrawer(anchor, false)}>
             {list(anchor)}
           </Drawer>
         </React.Fragment>

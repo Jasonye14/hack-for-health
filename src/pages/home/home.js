@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { AppBar, Toolbar, Typography, Button, CssBaseline, IconButton, Drawer, List, ListItem, ListItemText } from '@mui/material'; 
+import { AppBar, Toolbar, Typography, Button, CssBaseline, IconButton, Drawer, List, ListItem, ListItemText, TextField, Grid } from '@mui/material'; 
 import MenuIcon from '@mui/icons-material/Menu';
 import { styled } from '@mui/system';
 import video from '../../videos/healthcareFootage.mp4';
 import logo from '../../images/PillPair.webp'; 
-import { GlobalStyles } from '@mui/system';
-
+import { Link, animateScroll as scroll } from 'react-scroll';
+import image from '../../images/meds.jpg';
 
 // Define styles using MUI's styled helper
 const StyledDiv = styled('div')({
@@ -48,6 +48,11 @@ const Home = () => {
 
   const { mobileView, drawerOpen } = state;
 
+  const scrollToTop = () => {
+    scroll.scrollToTop();
+  };
+  
+
   React.useEffect(() => {
     const setResponsiveness = () => {
       return window.innerWidth < 600
@@ -62,12 +67,14 @@ const Home = () => {
   const displayDesktop = () => {
     return (
       <Toolbar>
-        
-        <Button color="inherit" style={{ color: "black" }}>Home</Button>
-        <Button color="inherit" style={{ color: "black" }}>About</Button>
-        <Button color="inherit" style={{ color: "black" }}>Contact</Button>
+        <Button color="inherit" style={{ color: "black" }} onClick={scrollToTop}>Home</Button>
+        <Link to="about" smooth={true} duration={500}>
+          <Button color="inherit" style={{ color: "black" }}>About</Button>
+        </Link>
+        <Link to="contact" smooth={true} duration={500}>
+          <Button color="inherit" style={{ color: "black" }}>Contact</Button>
+        </Link>
         <Button color="inherit" style={{ color: "black" }}>Sign In </Button>
-
       </Toolbar>
     );
   };
@@ -119,10 +126,10 @@ const Home = () => {
     <React.Fragment>
       <CssBaseline />
       <div>
-        <AppBar position="sticky" style={{ backgroundColor: '#fff', boxShadow: 'none' }}> 
+        <AppBar position="sticky" style={{ backgroundColor: '#fff', boxShadow: 'none' }}>
           <Toolbar style={{ padding: '20px' }}>
-            <img src={logo} alt="PillPair" style={{ height: '40px', marginRight: '10px' }} />
-            <Typography variant="h4" component="div" style={{ flexGrow: 1, color: '#000' }}> 
+            <img src={logo} alt="PillPair" style={{ height: '40px', marginRight: '10px' }} onClick={scrollToTop} />
+            <Typography variant="h4" component="div" style={{ flexGrow: 1, color: '#000' }} onClick={scrollToTop}>
               PillPair
             </Typography>
             {mobileView ? displayMobile() : displayDesktop()}
@@ -130,10 +137,10 @@ const Home = () => {
         </AppBar>
         <StyledDiv>
           <ContentDiv>
-            <Typography variant="h2" component="h1" gutterBottom style={{ color: '#000' }}> 
+            <Typography variant="h2" component="h1" gutterBottom style={{ color: '#000' }}>
               Where Healthcare Meets Harmony
             </Typography>
-            <Button variant="contained" style={{ backgroundColor: '#add8e6', color: '#333', fontSize: '20px', padding: '10px 20px' }}> 
+            <Button variant="contained" style={{ backgroundColor: 'black', color: 'white', fontSize: '20px', padding: '10px 20px' }}>
               Get Started
             </Button>
           </ContentDiv>
@@ -141,6 +148,37 @@ const Home = () => {
             <source src={video} type="video/mp4" />
           </VideoBackground>
         </StyledDiv>
+        <div id="about" style={{ backgroundColor: '#f5f5f5', padding: '40px' }}>
+          <Typography variant="h2" component="h2" gutterBottom style={{ color: '#000' }}>
+            About
+          </Typography>
+          <Typography variant="body1" component="p" style={{ color: '#000' }}>
+            At PillPair, we're dedicated to empowering individuals with the knowledge they need to make informed decisions about their medications. Our innovative platform provides a comprehensive drug interaction checker designed to highlight potential risks and interactions between medications, supplements, and even food. By leveraging cutting-edge technology and up-to-date medical information, we aim to reduce the complexity of medication management, making it easier for everyone to understand how different substances interact within their bodies. Whether you're managing multiple prescriptions or simply looking to optimize your health regimen, PillPair is your trusted partner in navigating the intricate world of medication safety and efficacy. Join us in our mission to promote better health outcomes through informed medication management.          </Typography>
+        </div>
+        <div id="image" style={{ position: 'relative', zIndex: -1 }}>
+          <img src={image} alt="Background Image" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+        </div>
+       <div id="contact" style={{ backgroundColor: '#f5f5f5', padding: '40px' }}>
+          <Typography variant="h2" component="h2" gutterBottom style={{ color: '#000' }}>
+            Contact
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={6}>
+              <TextField fullWidth label="Name" variant="outlined" InputProps={{ style: { backgroundColor: 'black' } }} />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField fullWidth label="Email" variant="outlined" InputProps={{ style: { backgroundColor: 'black' } }} />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField fullWidth label="Message" variant="outlined" multiline rows={4} InputProps={{ style: { backgroundColor: 'black' } }} />
+            </Grid>
+            <Grid item xs={12}>
+              <Button variant="contained"  style={{backgroundColor: 'black', color: 'white'}}> 
+                Send
+              </Button>
+            </Grid>
+          </Grid>
+        </div>
       </div>
     </React.Fragment>
   );

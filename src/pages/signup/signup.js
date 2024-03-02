@@ -6,6 +6,8 @@ import { Button, TextField, Container, Typography, Box, Snackbar, Alert, Grid, L
 
 const Signup = () => {
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [password, setPassword] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -70,6 +72,26 @@ const Signup = () => {
       <Box sx={{ width: '100%', maxWidth: 450, textAlign: 'center' }}>
         <Typography variant="h4" sx={{ mb: 2 }}>Sign Up</Typography>
         <Box component="form" onSubmit={handleSignup} noValidate>
+          <TextField
+            fullWidth
+            variant="outlined"
+            margin="normal"
+            required
+            label="First Name"
+            type="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <TextField
+            fullWidth
+            variant="outlined"
+            margin="normal"
+            required
+            label="Last Name"
+            type="lastName"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+          />
           <TextField
             fullWidth
             variant="outlined"

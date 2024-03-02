@@ -5,6 +5,7 @@ import Home from './pages/home/home';
 import Login from './pages/login/login'
 import Signup from './pages/signup/signup';
 import Dashboard from './pages/dashboard/dashboard';
+import ChatBotPage from './pages/Gemini/chatbot';
 
 function App() {
   return (
@@ -22,7 +23,7 @@ function RoutesContent() {
         <Route path='/login' element={<Login />} />
         <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/compatability-checker' element={<></>} />
-        <Route path='/gemini-chat-bot' element={<></>} />
+        <Route path='/gemini-chat-bot' element={<ChatBotPage/>} />
         <Route path='/history' element={<></>} />
         <Route path='/profile' element={<></>} />
         <Route path='/my-prescriptions' element={<Dashboard />} />

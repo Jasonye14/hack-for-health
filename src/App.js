@@ -8,6 +8,7 @@ import Dashboard from './pages/dashboard/dashboard';
 import ChatBotPage from './pages/Gemini/chatbot';
 import Settings from './pages/settings/settings';
 import Checker from './pages/compatability-checker/CompatabilityCheck';
+import History from './pages/history/history';
 
 function App() {
   return (
@@ -26,7 +27,7 @@ function RoutesContent() {
         <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/compatability-checker' element={<Checker/>} />
         <Route path='/gemini-chat-bot' element={<ChatBotPage/>} />
-        <Route path='/history' element={<></>} />
+        <Route path='/history' element={<History/>} />
         <Route path='/profile' element={<></>} />
         <Route path='/settings' element={<Settings/>} />
         <Route path='/my-prescriptions' element={<Dashboard />} />

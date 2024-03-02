@@ -1,81 +1,106 @@
 import React, { useState } from 'react';
-import './login.css';
 import { useNavigate } from 'react-router-dom';
-import { auth } from '../../firebase/firebaseConfig'; // Correct this path according to your project structure
+import { auth } from '../../firebase/firebaseConfig'; // Adjust this path as needed
 import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
+import { Button, TextField, Container, Typography, Box, Grid, Link } from '@mui/material';
 
 const Login = () => {
-  const [action, setAction] = useState("Login");
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // Function to handle traditional email/password sign-in
   const handleLogin = async (e) => {
-    e.preventDefault(); // Prevent the form from reloading the page
+    e.preventDefault();
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      console.log(userCredential.user);
-      navigate('/'); // Adjust this as needed
+      await signInWithEmailAndPassword(auth, email, password);
+      navigate('/dashboard'); // Adjust this as needed
     } catch (error) {
-      console.error(error);
+      setError('');
+      if (error.code === 'auth/user-not-found') {
+        setError('Account not found. Please check your email address.');
+      } else if (error.code === 'auth/wrong-password') {
+        setError('Incorrect password. Please try again.');
+      } else {
+        setError('Failed to log in. Please try again later.');
+      }
     }
   };
 
-  // Function to handle Google Sign-In
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      navigate('/'); // Adjust this as needed
+      navigate('/');
     } catch (error) {
       console.error(error);
     }
   };
 
   return (
-    <div className={"container"}>
-      <div className={"form-box"}>
-        <div className={"header"}>
-          <div className={"text"}>{action}</div>
-          <div className={"underline"}></div>
-        </div>
-        {action === "Login" && (
-          <form onSubmit={handleLogin}>
-            <div className={"inputs"}>
-              <div className={"input"}>
-                <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-              </div>
-            </div>
-            
-            <div className={"inputs"}>
-              <div className={"input"}>
-                <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-              </div>
-            </div>
-
-          {action==="Sign Up"?<div></div>: <div className="forget-password">Lost Password?  <a href="https://www.google.com/"> Click here!</a></div>}
-
-          {action === "Login" ? (<div></div>) : ( <div className="forget-password">
-            Have an account? <a onClick={() => setAction("Login")}> Click here!</a></div>)}
-
-          <div className="submit-container">
-            <div className={action=="Login"?"submit gray": "submit"} onClick={()=>{setAction("Sign Up")}}>Sign Up</div>
-            <div className={action=="Sign Up"?"submit gray": "submit"} onClick={()=>{setAction("Login")}}>Login</div>
-          </div>
-            <div className="submit" onClick={handleLogin}>Login</div>
-          </form>
-        )}
-        <div className="submit" onClick={signInWithGoogle}>Sign in with Google</div>
-        <div className="switch-action">
-          {action === "Login" ? (
-            <div onClick={() => setAction("Sign Up")}>Don't have an account? Sign Up</div>
-          ) : (
-            <div onClick={() => setAction("Login")}>Already have an account? Login</div>
+    <Container maxWidth="xs">
+      <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Typography component="h1" variant="h5">
+          Login
+        </Typography>
+        <Box component="form" onSubmit={handleLogin} noValidate sx={{ mt: 1 }}>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email Address"
+            name="email"
+            autoComplete="email"
+            autoFocus
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          {error && (
+            <Typography color="error" textAlign="center">
+              {error}
+            </Typography>
           )}
-        </div>
-      </div>
-    </div>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Login
+          </Button>
+          <Grid container>
+            <Grid item xs>
+              <Link href="#" variant="body2">
+                Forgot password?
+              </Link>
+            </Grid>
+          </Grid>
+          <Button
+            fullWidth
+            variant="outlined"
+            sx={{ mt: 3, mb: 2 }}
+            onClick={signInWithGoogle}
+          >
+            Sign in with Google
+          </Button>
+        </Box>
+      </Box>
+    </Container>
   );
 };
 

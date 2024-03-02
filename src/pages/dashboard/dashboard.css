@@ -1,11 +1,26 @@
 
 .panel {
-  margin-bottom: 2rem !important;
+  margin-bottom: 1rem !important;
   border-radius: 20px !important;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px !important;
+  border-bottom-color: none !important;
 }
 
 .panel .panel-image {
-  max-width: 4rem;
-  max-height: 4rem;
+  max-width: 8rem;
+  max-height: 8rem;
+}
+
+.panel .compatible-icon-wrapper {
+  display: flex;
+  min-height: 100%;
+  max-width: fit-content;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  /* background-color: green; */
+}
+
+.panel .compatible-icon {
+  color: green;
+  font-size: 2rem;
 }

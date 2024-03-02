@@ -7,6 +7,8 @@ npm install
 npm install @mui/material @emotion/react @emotion/styled
 npm install @mui/icons-material @mui/material @emotion/styled @emotion/react
 npm i react-router-dom
+npm i @google/generative-ai
+npm i @mui/styles
 
 
 ## Available Scripts

@@ -26,6 +26,7 @@ function RoutesContent() {
         <Route path='/history' element={<></>} />
         <Route path='/profile' element={<></>} />
         <Route path='/my-prescriptions' element={<Dashboard />} />
+        <Route path="*" element={<></>} />
       </Routes>
   );
 }

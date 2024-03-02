@@ -84,3 +84,4 @@ const SideMenu = () => {
 };
 
 export default SideMenu;
+export {darkTheme};

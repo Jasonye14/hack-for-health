@@ -1,13 +1,17 @@
 import * as React from 'react';
-import { AppBar, Toolbar, Typography, Button, CssBaseline, IconButton, Drawer, List, ListItem, ListItemText, TextField, Grid } from '@mui/material'; 
+import { AppBar, Toolbar, Typography, Button, CssBaseline, IconButton, Drawer, List, ListItem, ListItemText, Grid, Card, CardContent } from '@mui/material'; 
 import MenuIcon from '@mui/icons-material/Menu';
-import { styled } from '@mui/system';
-import video from '../../videos/healthcareFootage.mp4';
+import { styled, Box } from '@mui/system';
+import video from '../../videos/ocean2.mp4';
 import logo from '../../images/PillPair.webp'; 
 import { Link, animateScroll as scroll } from 'react-scroll';
 import {useNavigate} from 'react-router-dom';
 import image from '../../images/meds.jpg';
 import CircularProgress from '@mui/material/CircularProgress';
+import HomeIcon from '@mui/icons-material/Home';
+import PhoneIcon from '@mui/icons-material/Phone';
+import EmailIcon from '@mui/icons-material/Email';
+
 
 
 // Define styles using MUI's styled helper
@@ -86,17 +90,24 @@ const Home = () => {
     window.addEventListener("resize", () => setResponsiveness());
   }, []);
 
+  const HoverButton = styled(Button)(({ theme }) => ({
+    '&:hover': {
+      backgroundColor: 'lightblue',
+      color: 'white',
+    },
+  }));
+
   const displayDesktop = () => {
     return (
       <Toolbar>
-        <Button color="inherit" style={{ color: "black" }} onClick={scrollToTop}>Home</Button>
+        <HoverButton color="inherit" style={{ color: "black" }} onClick={scrollToTop}>Home</HoverButton>
         <Link to="about" smooth={true} duration={500}>
-          <Button color="inherit" style={{ color: "black" }}>About</Button>
+          <HoverButton color="inherit" style={{ color: "black" }}>About</HoverButton>
         </Link>
         <Link to="contact" smooth={true} duration={500}>
-          <Button color="inherit" style={{ color: "black" }}>Contact</Button>
+          <HoverButton color="inherit" style={{ color: "black" }}>Contact</HoverButton>
         </Link>
-        <Button color="inherit" style={{ color: "black" }} onClick={handleSignInClick}>Sign In </Button>
+        <HoverButton color="inherit" style={{ color: "black" }} onClick={handleSignInClick}>Sign In</HoverButton>
       </Toolbar>
     );
   };
@@ -185,27 +196,67 @@ const Home = () => {
         <div id="image" style={{ position: 'relative', zIndex: -1 }}>
           <img src={image} alt="Background Image" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
-       <div id="contact" style={{ backgroundColor: '#f5f5f5', padding: '40px' }}>
-          <Typography variant="h2" component="h2" gutterBottom style={{ color: '#000' }}>
-            Contact
-          </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
-              <TextField fullWidth label="Name" variant="outlined" InputProps={{ style: { backgroundColor: 'black' } }} />
+        <div id="contact" style={{ backgroundColor: '#f5f5f5', padding: '40px' }}>
+            <Typography variant="h2" component="h2" gutterBottom style={{ color: '#000' }}>
+              Contact
+            </Typography>
+            <Grid container spacing={2}>
+            <Grid item xs={12} md={4}>
+                <Card sx={{ 
+                  transition: '0.3s',
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                    boxShadow: '5px 5px 15px rgba(0,0,0,0.3)',
+                  },
+                }}>
+                  <CardContent>
+                    <Box display="flex" justifyContent="center" alignItems="center">
+                      <HomeIcon fontSize="large" />
+                      <Typography variant="body1" style={{ marginLeft: 8 }}>
+                        Address: 123 Main St, Anytown, USA
+                      </Typography>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <Card sx={{ 
+                  transition: '0.3s',
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                    boxShadow: '5px 5px 15px rgba(0,0,0,0.3)',
+                  },
+                }}>
+                  <CardContent>
+                    <Box display="flex" justifyContent="center" alignItems="center">
+                      <PhoneIcon fontSize="large" />
+                      <Typography variant="body1" style={{ marginLeft: 8 }}>
+                        (570) 923-6782
+                      </Typography>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <Card sx={{ 
+                  transition: '0.3s',
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                    boxShadow: '5px 5px 15px rgba(0,0,0,0.3)',
+                  },
+                }}>
+                  <CardContent>
+                    <Box display="flex" justifyContent="center" alignItems="center">
+                      <EmailIcon fontSize="large" />
+                      <Typography variant="body1" style={{ marginLeft: 8 }}>
+                        PillPair@gmail.com
+                      </Typography>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
             </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField fullWidth label="Email" variant="outlined" InputProps={{ style: { backgroundColor: 'black' } }} />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField fullWidth label="Message" variant="outlined" multiline rows={4} InputProps={{ style: { backgroundColor: 'black' } }} />
-            </Grid>
-            <Grid item xs={12}>
-              <Button variant="contained"  style={{backgroundColor: 'black', color: 'white'}}> 
-                Send
-              </Button>
-            </Grid>
-          </Grid>
-        </div>
+          </div>
       </div>
     </React.Fragment>
   );

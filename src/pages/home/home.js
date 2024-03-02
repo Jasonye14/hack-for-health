@@ -29,7 +29,7 @@ const StyledDiv = styled('div')({
 const ContentDiv = styled('div')({
   position: 'relative',
   zIndex: 2,
-  backgroundColor: 'rgba(255, 255, 255, 0.7)', // white background with some opacity
+  // backgroundColor: 'yellow', // white background with some opacity
   padding: '20px',
   borderRadius: '10px', // rounded corners
   display: 'flex',
@@ -175,9 +175,9 @@ const Home = () => {
         </AppBar>
         <StyledDiv>
           <ContentDiv>
-            <Typography variant="h2" component="h1" gutterBottom style={{ color: '#000' }}>
-              Where Healthcare Meets Harmony
-            </Typography>
+          <Typography variant="h2" component="h2" style={{ color: '#fff', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)' }}>
+            WHERE HEALTHCARE MEETS HARMONY
+          </Typography>
             <Button variant="contained" style={{ backgroundColor: '#add8e6', color: '#333', fontSize: '20px', padding: '10px 20px' }} onClick={handleGetStartedClick}>
               Get Started
             </Button>

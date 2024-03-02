@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import {
-  Drawer, Button, List, ListItem, ListItemText, CssBaseline, ThemeProvider, createTheme,
-  Avatar, Typography, Box
+  Drawer, Button, List, ListItem, ListItemIcon, ListItemText, CssBaseline, ThemeProvider, createTheme,
+  Avatar, Typography, Box, Divider
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import PharmacyIcon from '@mui/icons-material/LocalPharmacy'; 
+import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer'; 
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'; 
+import SettingsIcon from '@mui/icons-material/Settings'; 
 
 // Create a dark theme
 const darkTheme = createTheme({
@@ -27,7 +31,7 @@ const SideMenu = () => {
       role="presentation"
       onClick={toggleDrawer(anchor, false)}
       onKeyDown={toggleDrawer(anchor, false)}
-      sx={{ width: 250}} 
+      sx={{ width: 250, backgroundColor: '#171717', height: '100%' }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', padding: 2 }}>
         <Avatar src="profile_pic_url_here" sx={{ marginRight: 2 }} />
@@ -36,11 +40,22 @@ const SideMenu = () => {
         </Typography>
       </Box>
       <List>
-        {['My Prescriptions', 'Ask AI', 'Compatibility Checker'].map((text) => (
-          <ListItem button key={text}>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
+        {['My Prescriptions', 'Ask AI', 'Compatibility Checker'].map((text, index) => {
+          const icons = [<PharmacyIcon />, <QuestionAnswerIcon />, <CheckCircleIcon />];
+          return (
+            <ListItem button key={text}>
+              <ListItemIcon>{icons[index]}</ListItemIcon>
+              <ListItemText primary={text} />
+            </ListItem>
+          );
+        })}
+      </List>
+      <Divider />
+      <List>
+        <ListItem button key="Settings">
+          <ListItemIcon><SettingsIcon /></ListItemIcon>
+          <ListItemText primary="Settings" />
+        </ListItem>
       </List>
     </Box>
   );

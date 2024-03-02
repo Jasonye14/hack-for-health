@@ -25,6 +25,8 @@ const Signup = () => {
     const usersRef = ref(database, 'users/' + user.uid);
     await set(usersRef, {
       email: user.email,
+      firstName: name, // Store the first name
+      lastName: lastName,   // Store the last name
       // add any other user info you'd like to store
     });
 
@@ -62,13 +64,21 @@ const Signup = () => {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
-      // This gives you a Google Access Token. You can use it to access the Google API.
       const user = result.user;
-      // Save user info in Realtime Database
+
+      // Get the display name and attempt to split it into first and last names
+      const fullName = user.displayName || "";
+      const names = fullName.split(' ');
+      const firstName = names[0] || "";
+      const lastName = names.slice(1).join(' ') || ""; // Join the remaining parts as the last name
+
+      // Now, save user info in Realtime Database including the names
       const usersRef = ref(database, 'users/' + user.uid);
       await set(usersRef, {
         email: user.email,
-        // add any other user info you'd like to store
+        firstName: firstName, // Store the first name
+        lastName: lastName,   // Store the last name
+        profilePicture: user.photoURL, // You can also store the profile picture URL
       });
 
       setSnackbarMessage('Google sign-in successful. Welcome!');

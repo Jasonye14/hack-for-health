@@ -38,7 +38,7 @@ const SideMenu = () => {
         {/* Update the paths array to reflect the specific routes */}
         {['My Prescriptions', 'Ask AI', 'Compatibility Checker'].map((text, index) => {
           const icons = [<PharmacyIcon />, <QuestionAnswerIcon />, <CheckCircleIcon />];
-          const paths = ['/my-prescriptions', '/gemini-chat-bot', '/compatibility-checker'];
+          const paths = ['/my-prescriptions', '/gemini-chat-bot', '/compatability-checker'];
           return (
             <ListItem button key={text} onClick={() => handleNavigation(paths[index])}>
               <ListItemIcon>{icons[index]}</ListItemIcon>

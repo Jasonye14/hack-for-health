@@ -84,6 +84,15 @@ const Login = () => {
             Login
           </Button>
 
+          <Button
+            fullWidth
+            variant="outlined"
+            sx={{ mt: 1, mb: 2 }}
+            onClick={signInWithGoogle}
+          >
+            Sign in with Google
+          </Button>
+
           <Grid container>
             <Grid item xs>
               <Link href="#" variant="body2">
@@ -94,20 +103,11 @@ const Login = () => {
 
           <Grid container>
             <Grid item xs>
-              <Link href="#" variant="body2">
+              <Link href='\signup' variant="body2">
                 Do not have an account?
               </Link>
             </Grid>
           </Grid>
-
-          <Button
-            fullWidth
-            variant="outlined"
-            sx={{ mt: 3, mb: 2 }}
-            onClick={signInWithGoogle}
-          >
-            Sign in with Google
-          </Button>
         </Box>
       </Box>
     </Container>

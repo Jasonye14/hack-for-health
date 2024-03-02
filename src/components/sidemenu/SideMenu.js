@@ -9,12 +9,6 @@ import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'; 
 import SettingsIcon from '@mui/icons-material/Settings'; 
 
-// Create a dark theme
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-  },
-});
 
 const SideMenu = () => {
   const [state, setState] = useState({ left: false });
@@ -61,27 +55,23 @@ const SideMenu = () => {
   );
 
   return (
-    <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
-      <div>
-        {(['left']).map((anchor) => (
-          <React.Fragment key={anchor}>
-            <Button onClick={toggleDrawer(anchor, true)} style={{ color: 'white', minHeight: '60px' }}>
-              <MenuIcon />
-            </Button>
-            <Drawer
-              anchor={anchor}
-              open={state[anchor]}
-              onClose={toggleDrawer(anchor, false)}
-            >
-              {list(anchor)}
-            </Drawer>
-          </React.Fragment>
-        ))}
-      </div>
-    </ThemeProvider>
+    <div>
+      {(['left']).map((anchor) => (
+        <React.Fragment key={anchor}>
+          <Button onClick={toggleDrawer(anchor, true)} style={{ color: 'white', minHeight: '60px' }}>
+            <MenuIcon />
+          </Button>
+          <Drawer
+            anchor={anchor}
+            open={state[anchor]}
+            onClose={toggleDrawer(anchor, false)}
+          >
+            {list(anchor)}
+          </Drawer>
+        </React.Fragment>
+      ))}
+    </div>
   );
 };
 
 export default SideMenu;
-export {darkTheme};

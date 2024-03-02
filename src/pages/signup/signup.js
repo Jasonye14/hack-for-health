@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase/firebaseConfig'; // Adjust this path as needed
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { Button, TextField, Container, Typography, Box, Snackbar, Alert } from '@mui/material';
+import { Button, TextField, Container, Typography, Box, Snackbar, Alert, Grid, Link } from '@mui/material';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -93,9 +93,18 @@ const Signup = () => {
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
             Sign Up
           </Button>
+
           <Button fullWidth variant="outlined" sx={{ mt: 1, mb: 2 }} onClick={signInWithGoogle}>
-            Sign in with Google
+            Sign up with Google
           </Button>
+
+          <Grid container>
+            <Grid item xs>
+              <Link href="#" variant="body2">
+                Already have an account?
+              </Link>
+            </Grid>
+          </Grid>
         </Box>
       </Box>
       <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>

@@ -83,6 +83,7 @@ const Login = () => {
           >
             Login
           </Button>
+
           <Grid container>
             <Grid item xs>
               <Link href="#" variant="body2">
@@ -90,6 +91,15 @@ const Login = () => {
               </Link>
             </Grid>
           </Grid>
+
+          <Grid container>
+            <Grid item xs>
+              <Link href="#" variant="body2">
+                Do not have an account?
+              </Link>
+            </Grid>
+          </Grid>
+
           <Button
             fullWidth
             variant="outlined"

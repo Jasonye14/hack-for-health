@@ -69,7 +69,7 @@ const Home = () => {
     setLoading(true);
     await delay(500); // Wait for .5 seconds
     setLoading(false);
-    navigate('/login');
+    navigate('/signup');
   };
   
   const handleSignInClick = async () => {

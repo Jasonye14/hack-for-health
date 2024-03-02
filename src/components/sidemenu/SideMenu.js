@@ -5,6 +5,7 @@ import PharmacyIcon from '@mui/icons-material/LocalPharmacy';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer'; 
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'; 
 import SettingsIcon from '@mui/icons-material/Settings'; 
+import HistoryIcon from '@mui/icons-material/History';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const SideMenu = () => {
@@ -36,9 +37,9 @@ const SideMenu = () => {
       </Box>
       <List>
         {/* Update the paths array to reflect the specific routes */}
-        {['My Prescriptions', 'Ask AI', 'Compatibility Checker'].map((text, index) => {
-          const icons = [<PharmacyIcon />, <QuestionAnswerIcon />, <CheckCircleIcon />];
-          const paths = ['/my-prescriptions', '/gemini-chat-bot', '/compatability-checker'];
+        {['My Prescriptions', 'Ask AI', 'Compatibility Checker', 'My History'].map((text, index) => {
+          const icons = [<PharmacyIcon />, <QuestionAnswerIcon />, <CheckCircleIcon />, <HistoryIcon/>];
+          const paths = ['/my-prescriptions', '/gemini-chat-bot', '/compatability-checker', '/history'];
           return (
             <ListItem button key={text} onClick={() => handleNavigation(paths[index])}>
               <ListItemIcon>{icons[index]}</ListItemIcon>
@@ -49,7 +50,6 @@ const SideMenu = () => {
       </List>
       <Divider />
       <List>
-        {/* Settings can navigate to a settings page if you have one */}
         <ListItem button key="Settings" onClick={() => handleNavigation('/settings')}>
           <ListItemIcon><SettingsIcon /></ListItemIcon>
           <ListItemText primary="Settings" />

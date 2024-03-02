@@ -27,7 +27,7 @@ const Signup = () => {
       email: user.email,
       firstName: name, // Store the first name
       lastName: lastName,   // Store the last name
-      // add any other user info you'd like to store
+      //more user info here
     });
 
       setSnackbarMessage('Signup successful. Welcome!');

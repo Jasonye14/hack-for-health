@@ -5,7 +5,10 @@ import { styled } from '@mui/system';
 import video from '../../videos/healthcareFootage.mp4';
 import logo from '../../images/PillPair.webp'; 
 import { Link, animateScroll as scroll } from 'react-scroll';
+import {useNavigate} from 'react-router-dom';
 import image from '../../images/meds.jpg';
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 // Define styles using MUI's styled helper
 const StyledDiv = styled('div')({
@@ -41,6 +44,7 @@ const VideoBackground = styled('video')({
 });
 
 const Home = () => {
+
   const [state, setState] = React.useState({
     mobileView: false,
     drawerOpen: false,
@@ -51,7 +55,25 @@ const Home = () => {
   const scrollToTop = () => {
     scroll.scrollToTop();
   };
+
+  const [loading, setLoading] = React.useState(false);
+  const navigate = useNavigate();
+
+  const delay = (duration) => new Promise(resolve => setTimeout(resolve, duration));
+
+  const handleGetStartedClick = async () => {
+    setLoading(true);
+    await delay(500); // Wait for .5 seconds
+    setLoading(false);
+    navigate('/login');
+  };
   
+  const handleSignInClick = async () => {
+    setLoading(true);
+    await delay(500); // Wait for .5 seconds
+    setLoading(false);
+    navigate('/login');
+  };
 
   React.useEffect(() => {
     const setResponsiveness = () => {
@@ -74,7 +96,7 @@ const Home = () => {
         <Link to="contact" smooth={true} duration={500}>
           <Button color="inherit" style={{ color: "black" }}>Contact</Button>
         </Link>
-        <Button color="inherit" style={{ color: "black" }}>Sign In </Button>
+        <Button color="inherit" style={{ color: "black" }} onClick={handleSignInClick}>Sign In </Button>
       </Toolbar>
     );
   };
@@ -126,6 +148,11 @@ const Home = () => {
     <React.Fragment>
       <CssBaseline />
       <div>
+      {loading && (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255, 255, 255, 0.8)', zIndex: 9999 }}>
+          <CircularProgress />
+        </div>
+      )}
         <AppBar position="sticky" style={{ backgroundColor: '#fff', boxShadow: 'none' }}>
           <Toolbar style={{ padding: '20px' }}>
             <img src={logo} alt="PillPair" style={{ height: '40px', marginRight: '10px' }} onClick={scrollToTop} />
@@ -140,7 +167,7 @@ const Home = () => {
             <Typography variant="h2" component="h1" gutterBottom style={{ color: '#000' }}>
               Where Healthcare Meets Harmony
             </Typography>
-            <Button variant="contained" style={{ backgroundColor: 'black', color: 'white', fontSize: '20px', padding: '10px 20px' }}>
+            <Button variant="contained" style={{ backgroundColor: '#add8e6', color: '#333', fontSize: '20px', padding: '10px 20px' }} onClick={handleGetStartedClick}>
               Get Started
             </Button>
           </ContentDiv>

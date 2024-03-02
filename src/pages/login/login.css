@@ -49,7 +49,7 @@
 }
 
 .inputs{
-    margin-top: 55px;
+    margin-top: 25px;
     display: flex;
     flex-direction: column;
     gap: 25px;
@@ -59,7 +59,7 @@
     display: flex;
     align-items: center;
     margin: auto;
-    width: 480px;
+    width: 340px;
     height: 80px;
     background: #eaeaea;
     border-radius: 6px;
@@ -70,18 +70,19 @@
 }
 
 .input input{
-    width: 400px;
+    width: 250px;
     height: 50px;
     background: transparent;
     border: none;
     outline: none;
     color: #797979;
     font-size: 19px;
+    padding-left: 40px;
 }
 
 .forget-password{
-    padding-left: 70px;
-    margin-top: 30px;
+    padding-left: 0px;
+    margin-top: 20px;
     color: #797979;
     font-size: 18px;
 }

@@ -1,10 +1,15 @@
 import { useState } from "react";
 import React from 'react';
 import './login.css';
-import bgpicture from '../../images/BGIMGBB.png'
+import { useNavigate } from 'react-router-dom';
+import bgpicture from '../../images/BGIMGBB.png';
 
 const Login = () => {
   const [action, setAction] = useState("Login");
+  const navigate = useNavigate();
+  const clickAgain = () => { 
+    navigate("https://www.google.com/")
+};
   return (
     <div className={"container"}>
       <div className={"form-box"}>
@@ -31,11 +36,11 @@ const Login = () => {
             </div>
           </div>
 
-          {action==="Sign Up"?<div></div>: <div className="forget-password">Lost Password  <span> Click here!</span></div>}
+          {action==="Sign Up"?<div></div>: <div className="forget-password">Lost Password?  <a href="https://www.google.com/"> Click here!</a></div>}
 
           <div className="submit-container">
             <div className={action=="Login"?"submit gray": "submit"} onClick={()=>{setAction("Sign Up")}}>Sign Up</div>
-            <div className={action=="Sign Up"?"submit gray": "submit"}onClick={()=>{setAction("Login")}}>Login</div>
+            <div className={action=="Sign Up"?"submit gray": "submit"} onClick={()=>{setAction("Login")}}>Login</div>
           </div>
       </div>
 
@@ -44,3 +49,4 @@ const Login = () => {
 }
 
 export default Login
+/*<div className={action=="Login"?"submit gray": "submit"} onClick={()=>{clickAgain}}>Login</div>*/

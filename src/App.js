@@ -20,6 +20,7 @@ function RoutesContent() {
         <Route path='/' element={<Home />} />
         <Route path='/signup' element={<Signup />} />
         <Route path='/login' element={<Login />} />
+        <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/compatability-checker' element={<></>} />
         <Route path='/gemini-chat-bot' element={<></>} />
         <Route path='/history' element={<></>} />

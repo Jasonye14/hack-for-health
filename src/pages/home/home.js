@@ -8,7 +8,7 @@ import { Link, animateScroll as scroll } from 'react-scroll';
 import {useNavigate} from 'react-router-dom';
 import pillPic from '../../images/pills.jpg';
 import doctorPic from '../../images/doctor.jpg';
-import heartPic from '../../images/heart.jpg';
+import heartPic from '../../images/run1.jpg';
 import CircularProgress from '@mui/material/CircularProgress';
 import HomeIcon from '@mui/icons-material/Home';
 import PhoneIcon from '@mui/icons-material/Phone';
@@ -196,12 +196,17 @@ const Home = () => {
               About
             </Typography>
             <Typography variant="body1" component="p" style={{ color: '#000' }}>
-              At PillPair, we're dedicated to empowering individuals with the knowledge they need to make informed decisions about their medications. Our innovative platform provides a comprehensive drug interaction checker designed to highlight potential risks and interactions between medications, supplements, and even food. By leveraging cutting-edge technology and up-to-date medical information, we aim to reduce the complexity of medication management, making it easier for everyone to understand how different substances interact within their bodies. Whether you're managing multiple prescriptions or simply looking to optimize your health regimen, PillPair is your trusted partner in navigating the intricate world of medication safety and efficacy. Join us in our mission to promote better health outcomes through informed medication management.          </Typography>
+              Our platform not only provides information about potential drug interactions, but also offers personalized recommendations based on food and beverage consumption. By inputting your medications, PillPair can generate tailored suggestions to help you optimize your medication regimen and minimize potential risks. We believe that everyone deserves access to personalized healthcare, and our goal is to empower individuals to take control of their own well-being.
+            </Typography>
+            <br />
+            <Typography variant="body1" component="p" style={{ color: '#000' }}>
+              In addition to our drug interaction checker, PillPair also offers a medication reminder feature to help you stay on track with your prescribed regimen. With customizable reminders and notifications, you can ensure that you never miss a dose or accidentally take conflicting medications. Our user-friendly interface and intuitive design make it easy to manage your medications, so you can focus on what matters most – your health and well-being.
+            </Typography>
           </div>
           <Carousel navButtonsAlwaysVisible>
-            <img src={pillPic} alt="Pills" style={{ height: '700px', width: '100%', objectFit: 'cover'}} />
+            <img src={heartPic} alt="Pills" style={{ height: '700px', width: '100%', objectFit: 'cover'}} />
             <img src={doctorPic} alt="Doctor" style={{ height: '700px', width: '100%', objectFit: 'cover' }} />
-            <img src={heartPic} alt="Sethoscope" style={{ height: '700px', width: '100%', objectFit: 'cover' }} />
+            <img src={pillPic} alt="Sethoscope" style={{ height: '700px', width: '100%', objectFit: 'cover' }} />
           </Carousel>
           <div id="contact" style={{ backgroundColor: '#f5f5f5', padding: '40px' }}>
               <Typography variant="h2" component="h2" gutterBottom style={{ color: '#000' }}>

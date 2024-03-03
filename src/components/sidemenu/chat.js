@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, Button, List, ListItem, Paper, Typography, CircularProgress, Box } from '@mui/material';
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { auth } from '../../firebase/firebaseConfig';
+import { getDatabase, ref, set, get, onValue, push } from "firebase/database";
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { Message } from '@mui/icons-material';
 
 const Chat = () => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [userId, setUserId] = useState(null);
 
   const genAI = new GoogleGenerativeAI("AIzaSyDilnhNZuB5EDltsTx2JgnnvsUg0mkPa1E");
 
@@ -16,13 +21,37 @@ const Chat = () => {
     }
   }, [messages]);
 
+  useEffect(() => {
+    if (userId) {
+      fetchMessages();
+    }
+  }, [userId]); // Depend on userId
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserId(user.uid); // This sets the UID to your component's state
+      } else {
+        setUserId(null); // Handle signed-out state
+      }
+    });
+
+    return () => unsubscribe(); // Cleanup the subscription on component unmount
+}, []);
+
   const sendMessage = async (text) => {
     if (!text.trim()) return;
+    const db = getDatabase();
 
     const userMessage = { author: 'You', text, timestamp: new Date().toLocaleTimeString() };
     setMessages((messages) => [...messages, userMessage]);
     setInput('');
     setLoading(true);
+
+    // Save user message to Firebase
+    const messagesRef = ref(db, `/users/${userId}/chat/messages`);
+    const newUserMessageRef = push(messagesRef);
+    set(newUserMessageRef, userMessage);
 
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-pro" });
@@ -33,6 +62,10 @@ const Chat = () => {
 
       setTimeout(() => {
         const aiMessage = { author: 'Gemini', text: aiText, timestamp: new Date().toLocaleTimeString() };
+        const newAiMessageRef = push(messagesRef);
+        set(newAiMessageRef, aiMessage);
+
+        // Update local state with AI message
         setMessages((messages) => [...messages, aiMessage]);
         setLoading(false);
       }, 2000); // Adjust delay as needed or integrate with actual API call
@@ -51,6 +84,28 @@ const Chat = () => {
       event.preventDefault();
     }
   };
+
+  const fetchMessages = () => {
+    if (!userId) return; // Early return if userId is not set
+  
+    const db = getDatabase();
+    const messagesRef = ref(db, `/users/${userId}/chat/messages`);
+  
+    onValue(messagesRef, (snapshot) => {
+      const messagesData = snapshot.val();
+      if (!messagesData) {
+        setMessages([]);
+        return;
+      }
+      const loadedMessages = Object.keys(messagesData).map((key) => ({
+        uid: key,
+        ...messagesData[key],
+      }));
+      setMessages(loadedMessages);
+    });
+  };
+
+  
 
   const MessageItem = ({ message }) => (
     <ListItem sx={{ display: 'flex', flexDirection: message.author === 'You' ? 'row-reverse' : 'row', mb: 1 }}>
@@ -90,7 +145,7 @@ const Chat = () => {
         padding: '10px',
       }}>
         {messages.map((message, index) => (
-          <MessageItem key={index} message={message} />
+          <MessageItem key={message.uid} message={message} />
         ))}
         {loading && (
           <ListItem sx={{ justifyContent: 'center' }}>

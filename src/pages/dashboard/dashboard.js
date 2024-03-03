@@ -80,24 +80,34 @@ function Dashboard() {
 
   // Check compatability w/ Gemini
   const checkCompatability = async () => {
-    let response = [];
-
-    const currPrescNames = [...prescriptions.map(p => p.name)]
+    const currPrescNames = []
+    let response = []
+    for (let i = 0; i < prescriptions.length; i++) {
+      currPrescNames.push(prescriptions[i].name)
+    } 
+    if (prescriptions.length === 0) {
+      let prompt = `Is '${newPrescription.name}' a medicine?'` + endPrompt;
+      let res = await CheckCompatibleGemini(genAI, prompt)
+      response = res.trim().replace(/[\r\n]+/g, '').split(":"); // NEED to trim
+      console.log(response[0])
+      if (response[0] === 'no' || response[0] === 'maybe') {
+        return response
+      }
+    }
     for (let i = 0; i < currPrescNames.length; i++) {
       let prompt = `Is medicine '${newPrescription.name}' compatible with '${currPrescNames[i]}'` + endPrompt;
       console.log(prompt);
       let res = await CheckCompatibleGemini(genAI, prompt)
+      console.log(res)
+      let response
       response = res.trim().replace(/[\r\n]+/g, '').split(":"); // NEED to trim
       if (response[0] === 'no' || response[1] === 'maybe') {
+      console.log(response[0])
+      if (response[0] === 'no' || response[0] === 'maybe') {
         return response
       }
     }
-    return ['yes']
-    // let prompt = `Is medicine '${newPrescription.name}' compatible with ` + currPrescNames.join(", ") + endPrompt;
-    // console.log(prompt)
-    // const res = await CheckCompatibleGemini(genAI, prompt);
-    // const responses = res.replace(/[\r\n]+/g, '').split(":");
-    // return responses;
+    return response;
   }
 
   // POST prescription to Firebase

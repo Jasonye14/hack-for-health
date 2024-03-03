@@ -27,7 +27,7 @@ const Chat = () => {
         unsubscribe = fetchMessages(); // Assign the returned unsubscribe function
     }
     return () => unsubscribe && unsubscribe(); // Cleanup by calling unsubscribe
-}, [userId]);
+  }, [userId]);
 
 
   useEffect(() => {

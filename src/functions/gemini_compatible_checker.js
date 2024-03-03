@@ -1,5 +1,3 @@
-
-
 async function CheckCompatibleGemini(genAI, prompt) {
   let aiResponse = "Nothing...";
   try {
@@ -8,7 +6,7 @@ async function CheckCompatibleGemini(genAI, prompt) {
     const response = await result.response;
     aiResponse = await response.text();
 
-    setTimeout(() => {}, 750000);
+    setTimeout(() => {}, 3000);
   } catch (error) {
     console.error('Error fetching data:', error);
     aiResponse = "ERROR";

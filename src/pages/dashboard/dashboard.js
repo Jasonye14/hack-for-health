@@ -56,7 +56,6 @@ function Dashboard() {
   const genAI = new GoogleGenerativeAI("AIzaSyDilnhNZuB5EDltsTx2JgnnvsUg0mkPa1E");
   const [prescriptions, setPrescriptions] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
-  const [geminiResponse, setGeminiResponse] = useState(null);
   const [userId, setUserId] = useState(null);
   const [newPrescription, setNewPrescription] = useState({ // State for the new prescription fields
     name: '',
@@ -72,20 +71,51 @@ function Dashboard() {
   const handleOpenDialog = () => setOpenDialog(true);
   const handleCloseDialog = () => setOpenDialog(false);
 
-  // Update the state as the user types in the fields
+  // User inputting new prescription...
   const handleChange = (prop) => (event) => {
     setNewPrescription({ ...newPrescription, [prop]: event.target.value });
   };
 
-  // Handle the action of adding a new prescription (placeholder functionality)
-  const handleAddEntry = () => {
-    if (!userId) return; // Ensure we have a user ID
+  // Expand/shrink panel
+  const handlePanelClick = (prescID) => {    
+    let changedPrescriptions = [...prescriptions] // NEED spread operator (need to make copy)
+    const prescToModify = changedPrescriptions.find(p => p.id === prescID);
+    if (prescToModify) {
+      prescToModify['expanded'] = !(prescToModify['expanded']); // Expand/shrink
+    }
+    setPrescriptions(changedPrescriptions);
+  };
 
+  // Handle adding new prescription
+  // 1. Check compatability w/ Gemini
+  // 2. Post to firebase
+  // 3. Update prescriptions state
+  const handleAddEntry = async () => {
+    let res = await checkCompatability();
+    handlePostFirebase(res[0], res[1] ?? "Nothing here...");
+    updatePrescriptions();
+  };
+
+  // Check compatability w/ Gemini
+  const checkCompatability = async () => {
+    const currPrescNames = [...prescriptions.map(p => p.name)]
+    let prompt = `Is medicine ${newPrescription.name} compatible with ` + currPrescNames.join(", ") + endPrompt;
+    console.log(prompt)
+    const res = await CheckCompatibleGemini(genAI, prompt);
+    const responses = res.replace(/[\r\n]+/g, '').split(":");
+    return responses;
+  }
+
+  // POST prescription to Firebase
+  const handlePostFirebase = (compatible, compatibleDesc) => {
+    if (!userId) return; // Ensure we have a user ID
     const db = getDatabase();
     const userPrescriptionsRef = ref(db, `/users/${userId}/prescriptions`);
     const newPrescriptionRef = push(userPrescriptionsRef);
     set(newPrescriptionRef, {
       ...newPrescription,
+      compatible: compatible,
+      compatibleDesc: compatibleDesc,
       dateAdded: new Date().toISOString(),
     }).then(() => {
       console.log('New prescription added.');
@@ -97,43 +127,30 @@ function Dashboard() {
         duration: '',
         dateAdded: '',
         expanded: false,
-        compatible: 'pending',
-        compatibleDetails: ''
+        compatible: "pending",
+        compatibleDetails: "Nothing here..."
       });
     }).catch((error) => {
       console.error("Could not add prescription: ", error);
     });
-  };
-
-  // Check compatability w/ Gemini
-  const checkCompatability = (newPrescID, newPrescName, oldPrescArray) => {
-    let prompt = `Is medicine ${newPrescName} compatible with ` + oldPrescArray.join(", ") + endPrompt;
-    console.log(prompt)
-    CheckCompatibleGemini(genAI, prompt).then((res) => {
-      let responses = res.split(":");
-      setGeminiResponse([newPrescID, ...responses]);
-    });
   }
 
-  useEffect(() => {
-    console.log(prescriptions);
-    if (geminiResponse) {
-      console.log(geminiResponse);
-      let changedPrescriptions = [...prescriptions] // NEED spread operator (need to make copy)
-      const prescToModify = changedPrescriptions.find(p => p.id === geminiResponse[0]);
-      if (prescToModify) {
-        prescToModify['compatible'] = geminiResponse[1]; // 'yes', 'no', 'maybe'
+  // Retrieve data from 
+  const updatePrescriptions = () => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserId(user.uid);
+        fetchPrescriptions(user.uid);
+      } else {
+        setUserId(null);
+        setPrescriptions([]);
       }
+    });
 
-      if (geminiResponse.length > 2) {
-        prescToModify['compatibleDetails'] = geminiResponse[2]; // detailed explanation of compatability
-      }
-      
-      setPrescriptions(changedPrescriptions);
-      setGeminiResponse(null);
-    }
-  }, [prescriptions, geminiResponse]);
+    return () => unsubscribe(); // Cleanup subscription
+  }
 
+  // Load data from Firebase
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -148,6 +165,7 @@ function Dashboard() {
     return () => unsubscribe(); // Cleanup subscription
   }, []);
 
+  // GET user prescriptions from Firebase
   const fetchPrescriptions = (uid) => {
     const db = getDatabase();
     const userPrescriptionsRef = ref(db, `/users/${uid}/prescriptions`);
@@ -167,19 +185,6 @@ function Dashboard() {
     return () => off(userPrescriptionsRef); // Unsubscribe from this ref's updates
   };
 
-  
-
- 
-  
-
-  const handlePanelClick = (prescID) => {    
-    let changedPrescriptions = [...prescriptions] // NEED spread operator (need to make copy)
-    const prescToModify = changedPrescriptions.find(p => p.id === prescID);
-    if (prescToModify) {
-      prescToModify['expanded'] = !(prescToModify['expanded']); // Expand/shrink
-    }
-    setPrescriptions(changedPrescriptions);
-  };
 
 
   return (

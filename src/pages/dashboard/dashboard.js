@@ -24,8 +24,7 @@ import PharmacyIcon from '@mui/icons-material/LocalPharmacy';
 import compatibleIcons from '../../components/compatibleIcon/compatibleIcon';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const endPrompt = `? Give a single response answer 'yes', 'no', 'maybe' in lowercase considering all the options. If the medicine isn't recognized, reply with 'maybe' and give a explanation as described in the next sentence. If 'no' or 'maybe', add colon, then a small, detailed explanation why. DON'T give anything else.`;
-
+const endPrompt = "As a healthcare expert, analyze the compatibility of the following item with the listed prescriptions. For each prescription, provide your evaluation using only 'yes', 'no', or 'maybe' in lowercase. Format your responses with a vertical bar '|' separating each. When the item is not clearly identifiable as a prescription, food, or consumable product, or when there's ambiguity, answer with 'maybe', followed by a brief explanation. For 'no' or 'maybe' responses, include a concise rationale immediately following. Ensure each prescription's compatibility assessment is distinct and justified, adhering to the format without adding extraneous details. The prescriptions are as follows: ";
 function Dashboard() {
   const genAI = new GoogleGenerativeAI("AIzaSyDilnhNZuB5EDltsTx2JgnnvsUg0mkPa1E");
   const [prescriptions, setPrescriptions] = useState([]);
@@ -88,19 +87,21 @@ function Dashboard() {
       let prompt = `Is medicine '${newPrescription.name}' compatible with '${currPrescNames[i]}'` + endPrompt;
       console.log(prompt);
       let res = await CheckCompatibleGemini(genAI, prompt)
-      console.log(res)
       response = res.trim().replace(/[\r\n]+/g, '').split(":"); // NEED to trim
-      console.log(response)
       if (response[0] === 'no' || response[1] === 'maybe') {
         return response
       }
     }
     return ['yes']
+    // let prompt = `Is medicine '${newPrescription.name}' compatible with ` + currPrescNames.join(", ") + endPrompt;
+    // console.log(prompt)
+    // const res = await CheckCompatibleGemini(genAI, prompt);
+    // const responses = res.replace(/[\r\n]+/g, '').split(":");
+    // return responses;
   }
 
   // POST prescription to Firebase
   const handlePostFirebase = (compatible, compatibleDesc) => {
-    console.log(compatible);
     if (!userId) return; // Ensure we have a user ID
     const db = getDatabase();
     const userPrescriptionsRef = ref(db, `/users/${userId}/prescriptions`);

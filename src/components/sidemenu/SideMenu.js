@@ -9,6 +9,7 @@ import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'; 
 import SettingsIcon from '@mui/icons-material/Settings'; 
 import HistoryIcon from '@mui/icons-material/History';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const useFetchUserData = (userId) => {
@@ -103,6 +104,10 @@ const SideMenu = () => {
         <ListItem button key="Settings" onClick={() => handleNavigation('/settings')}>
           <ListItemIcon><SettingsIcon /></ListItemIcon>
           <ListItemText primary="Settings" />
+        </ListItem>
+        <ListItem button key="Log Out" onClick={() => handleNavigation('/')}>
+          <ListItemIcon><LogoutIcon /></ListItemIcon>
+          <ListItemText primary="Log Out" />
         </ListItem>
       </List>
     </Box>

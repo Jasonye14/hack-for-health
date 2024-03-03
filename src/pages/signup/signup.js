@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase/firebaseConfig';
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { Button, TextField, Container, Typography, Box, Snackbar, Alert, Grid, Link } from '@mui/material';
-import { getDatabase, ref, set, get } from "firebase/database";
+import { Button, TextField, Container, Typography, Box, Snackbar, Alert, Grid, Link, AppBar, Toolbar, Drawer, List, ListItem, ListItemText, IconButton } from '@mui/material';
+import { getDatabase, ref, set } from "firebase/database";
+import { styled} from '@mui/system';
+import logo from '../../images/PillPair.webp'; 
+import MenuIcon from '@mui/icons-material/Menu';
+
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -59,7 +63,6 @@ const Signup = () => {
     }
   };
 
-
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     try {
@@ -91,6 +94,98 @@ const Signup = () => {
     }
   };
 
+  //THIS SECTION IS KEVIN CODE. IT IS FOR THE BAR MENU AND THE SCROLL TO TOP FUNCTION
+  const [loading, setLoading] = React.useState(false);
+
+  const delay = (duration) => new Promise(resolve => setTimeout(resolve, duration));
+
+
+  const [state, setState] = React.useState({
+    mobileView: false,
+    drawerOpen: false,
+  });
+
+  const { mobileView, drawerOpen } = state;
+  
+  const handleSignInClick = async () => {
+    setLoading(true);
+    await delay(500); // Wait for .5 seconds
+    setLoading(false);
+    navigate('/login');
+  };
+
+  React.useEffect(() => {
+    const setResponsiveness = () => {
+      return window.innerWidth < 600
+        ? setState((prevState) => ({ ...prevState, mobileView: true }))
+        : setState((prevState) => ({ ...prevState, mobileView: false }));
+    };
+
+    setResponsiveness();
+    window.addEventListener("resize", () => setResponsiveness());
+  }, []);
+
+  const HoverButton = styled(Button)(({ theme }) => ({
+    '&:hover': {
+      backgroundColor: '#90caf9',
+      color: 'white',
+    },
+  }));
+
+  const displayDesktop = () => {
+    return (
+      <Toolbar>
+        <HoverButton color="inherit" style={{ color: "white" }} >Home</HoverButton>
+        <HoverButton color="inherit" style={{ color: "white" }} >Sign In</HoverButton>
+      </Toolbar>
+    );
+  };
+
+  const displayMobile = () => {
+    const handleDrawerOpen = () =>
+      setState((prevState) => ({ ...prevState, drawerOpen: true }));
+    const handleDrawerClose = () =>
+      setState((prevState) => ({ ...prevState, drawerOpen: false }));
+
+    return (
+      <Toolbar>
+        <IconButton
+          {...{
+            edge: "start",
+            color: "inherit",
+            "aria-label": "menu",
+            "aria-haspopup": "true",
+            onClick: handleDrawerOpen,
+          }}
+        >
+          <MenuIcon />
+        </IconButton>
+
+        <Drawer
+          {...{
+            anchor: "left",
+            open: drawerOpen,
+            onClose: handleDrawerClose,
+          }}
+        >
+          <List>
+            {['Home', 'About', 'Contact', 'Credits'].map((text, index) => (
+              <ListItem button key={text}>
+                <ListItemText primary={text} />
+              </ListItem>
+            ))}
+          </List>
+        </Drawer>
+
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          Logo
+        </Typography>
+      </Toolbar>
+    );
+  };
+
+
+
   const handleCloseSnackbar = (event, reason) => {
     if (reason === 'clickaway') {
       return;
@@ -100,6 +195,15 @@ const Signup = () => {
 
   return (
     <Container>
+      <AppBar position="sticky" style={{ backgroundColor: '#121212', boxShadow: 'none' }}>
+          <Toolbar style={{ padding: '20px' }}>
+            <img src={logo} alt="PillPair" style={{ height: '40px', marginRight: '10px' }}  />
+            <Typography variant="h4" component="div" style={{ flexGrow: 1, color: 'white' }} >
+              PillPair
+            </Typography>
+            {mobileView ? displayMobile() : displayDesktop()}
+          </Toolbar>
+        </AppBar>
       <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Grid container>
           <Grid item xs>

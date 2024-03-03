@@ -22,10 +22,13 @@ const Chat = () => {
   }, [messages]);
 
   useEffect(() => {
+    let unsubscribe; // Declare variable to hold the unsubscribe function
     if (userId) {
-      fetchMessages();
+        unsubscribe = fetchMessages(); // Assign the returned unsubscribe function
     }
-  }, [userId]); // Depend on userId
+    return () => unsubscribe && unsubscribe(); // Cleanup by calling unsubscribe
+}, [userId]);
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {

@@ -3,11 +3,11 @@ import { Drawer, Button, List, ListItem, ListItemIcon, ListItemText, Avatar, Typ
 import MenuIcon from '@mui/icons-material/Menu';
 import { auth } from '../../firebase/firebaseConfig';
 import { getDatabase, ref, set, get, onValue } from "firebase/database";
-import { onAuthStateChanged } from 'firebase/auth';
-import PharmacyIcon from '@mui/icons-material/LocalPharmacy'; 
-import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer'; 
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'; 
-import SettingsIcon from '@mui/icons-material/Settings'; 
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import PharmacyIcon from '@mui/icons-material/LocalPharmacy';
+import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import SettingsIcon from '@mui/icons-material/Settings';
 import HistoryIcon from '@mui/icons-material/History';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
@@ -41,7 +41,6 @@ const useFetchUserData = (userId) => {
 const SideMenu = () => {
   const [state, setState] = useState({ left: false });
   const navigate = useNavigate();
-
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
@@ -75,6 +74,15 @@ const SideMenu = () => {
     navigate(path);
   };
 
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate('/home'); // Redirect to login page after logout
+    } catch (error) {
+      console.error("Logout Error:", error);
+    }
+  };
+
   const list = (anchor) => (
     <Box
       role="presentation"
@@ -89,7 +97,7 @@ const SideMenu = () => {
       <List>
         {/* Update the paths array to reflect the specific routes */}
         {['My Prescriptions', 'Ask AI', 'Compatibility Checker', 'My History'].map((text, index) => {
-          const icons = [<PharmacyIcon />, <QuestionAnswerIcon />, <CheckCircleIcon />, <HistoryIcon/>];
+          const icons = [<PharmacyIcon />, <QuestionAnswerIcon />, <CheckCircleIcon />, <HistoryIcon />];
           const paths = ['/my-prescriptions', '/gemini-chat-bot', '/compatability-checker', '/history'];
           return (
             <ListItem button key={text} onClick={() => handleNavigation(paths[index])}>
@@ -105,7 +113,7 @@ const SideMenu = () => {
           <ListItemIcon><SettingsIcon /></ListItemIcon>
           <ListItemText primary="Settings" />
         </ListItem>
-        <ListItem button key="Log Out" onClick={() => handleNavigation('/')}>
+        <ListItem button key="Log Out" onClick={handleLogout}>
           <ListItemIcon><LogoutIcon /></ListItemIcon>
           <ListItemText primary="Log Out" />
         </ListItem>

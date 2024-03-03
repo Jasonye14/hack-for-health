@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TextField, Button, List, ListItem, Paper, Typography, CircularProgress, Box } from '@mui/material';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { auth } from '../../firebase/firebaseConfig';
-import { getDatabase, ref, set, onValue, push } from "firebase/database";
+import { getDatabase, ref, onValue, push } from "firebase/database";
 import { onAuthStateChanged} from 'firebase/auth';
 //import { Message } from '@mui/icons-material';
 
@@ -48,14 +48,13 @@ const Chat = () => {
     const db = getDatabase();
 
     const userMessage = { author: 'You', text, timestamp: new Date().toLocaleTimeString() };
-    setMessages((messages) => [...messages, userMessage]);
+    //setMessages((messages) => [...messages, userMessage]);
     setInput('');
     setLoading(true);
 
     // Save user message to Firebase
     const messagesRef = ref(db, `/users/${userId}/chat/messages`);
-    const newUserMessageRef = push(messagesRef);
-    set(newUserMessageRef, userMessage);
+    push(messagesRef, userMessage);
 
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-pro" });
@@ -63,20 +62,17 @@ const Chat = () => {
       const result = await model.generateContent(prompt);
       const response = await result.response;
       const aiText = await response.text();
-
-      setTimeout(() => {
-        const aiMessage = { author: 'Gemini', text: aiText, timestamp: new Date().toLocaleTimeString() };
-        const newAiMessageRef = push(messagesRef);
-        set(newAiMessageRef, aiMessage);
-
-        // Update local state with AI message
-        setMessages((messages) => [...messages, aiMessage]);
-        setLoading(false);
-      }, 2000); // Adjust delay as needed or integrate with actual API call
+  
+      // Remove the setTimeout and direct state update. Just push to Firebase.
+      const aiMessage = { author: 'Gemini', text: aiText, timestamp: new Date().toLocaleTimeString() };
+      push(messagesRef, aiMessage); // This will trigger the listener to update the state
+  
+      // Remove direct local state update and setTimeout
     } catch (error) {
       console.error('Error fetching data:', error);
-      setMessages((messages) => [...messages, { author: 'AI', text: "Sorry, I couldn't fetch a response.", timestamp: new Date().toLocaleTimeString() }]);
-      setLoading(false);
+      // You could still push an error message to Firebase or handle it differently
+    } finally {
+      setLoading(false); // Ensure loading is set to false in all cases
     }
   };
 

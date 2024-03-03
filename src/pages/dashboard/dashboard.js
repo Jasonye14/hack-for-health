@@ -24,8 +24,7 @@ import PharmacyIcon from '@mui/icons-material/LocalPharmacy';
 import compatibleIcons from '../../components/compatibleIcon/compatibleIcon';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-
-const endPrompt = `? Give a single response answer 'yes', 'no', 'maybe' in lowercase considering all the options. If the medicine isn't recognized, reply with 'maybe' and give a explanation as described in the next sentence. If 'no' or 'maybe', add colon, then a small, detailed explanation why. You must consider whether the given medicine is actually a medicine and whether the thing being compared to is a medicine. DON'T give anything else.`;
+const endPrompt = `? Give a single response answer 'yes', 'no', 'maybe' in lowercase considering all the options. If the item/food/medicine isn't recognized, reply with 'maybe' and give a explanation as described in the next sentence. If 'no' or 'maybe', add colon, then a small, detailed explanation why. DON'T give anything else.`;
 
 function Dashboard() {
   const genAI = new GoogleGenerativeAI("AIzaSyDilnhNZuB5EDltsTx2JgnnvsUg0mkPa1E");

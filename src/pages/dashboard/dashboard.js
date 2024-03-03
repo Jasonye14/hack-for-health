@@ -4,7 +4,7 @@ import {
   Accordion, AccordionSummary,
   AccordionDetails, Grid, Button,
   Box, Dialog, DialogTitle,
-  DialogActions, DialogContent, TextField
+  DialogActions, DialogContent, TextField, Snackbar, Alert
 } from '@mui/material';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
@@ -24,13 +24,22 @@ import PharmacyIcon from '@mui/icons-material/LocalPharmacy';
 import compatibleIcons from '../../components/compatibleIcon/compatibleIcon';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const endPrompt = `? Give a single response answer 'yes', 'no', 'maybe' in lowercase considering all the options. If the item/food/medicine isn't recognized, reply with 'maybe' and give a explanation as described in the next sentence. If 'no' or 'maybe', add colon, then a small, detailed explanation why. DON'T give anything else. There should only be 1 'yes', 'no', or 'maybe'`;
+const endPrompt = `? Give a single response answer 'yes', 'no', 'maybe' in lowercase considering all the options. If the medicine isn't recognized, reply with 'maybe' and give a explanation as described in the next sentence. If 'no' or 'maybe', add colon, then a small, detailed explanation why. DON'T give anything else.`;
 
 function Dashboard() {
   const genAI = new GoogleGenerativeAI("AIzaSyDilnhNZuB5EDltsTx2JgnnvsUg0mkPa1E");
   const [prescriptions, setPrescriptions] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [validationError, setValidationError] = useState('');
+
+  const showSnackbar = (message) => {
+    setSnackbarMessage(message);
+    setSnackbarOpen(true);
+  };
+
   const [newPrescription, setNewPrescription] = useState({ // State for the new prescription fields
     name: '',
     dosage: '',
@@ -161,6 +170,13 @@ function Dashboard() {
     return () => unsubscribe(); // Cleanup subscription
   }, []);
 
+  useEffect(() => {
+    if (validationError) {
+      showSnackbar(validationError);
+    }
+  }, [validationError]);
+
+
   // GET user prescriptions from Firebase
   const fetchPrescriptions = (uid) => {
     const db = getDatabase();
@@ -213,11 +229,94 @@ function Dashboard() {
   };
 
   const isFormValid = () => {
-    return newPrescription.name.trim() !== '' &&
+    const dosageValid = newPrescription.dosage > 0;
+    const frequencyValid = newPrescription.frequency > 0 && newPrescription.frequency <= 24; // Assuming frequency per day
+    const durationValid = newPrescription.duration > 0 && newPrescription.duration <= 365; // Assuming duration in days, max 1 year
+
+    return (
+      newPrescription.name.trim() !== '' &&
+      dosageValid &&
+      frequencyValid &&
+      durationValid
+    );
+  };
+
+  const isHealthcareRelated = async (term) => {
+    if (!term.trim()) return false; // Early return if the term is empty
+
+    const prompt = `Is "${term}" related to healthcare, such as a medication, food item, or other healthcare-related products? Answer 'yes' or 'no'. If you don't know the word, answer 'no'. If the term is too broad, such as food and medication, also answer 'no'.`;
+    try {
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+      const result = await model.generateContent(prompt);
+      const response = await result.response.text();
+
+      console.log("reply:", response); // Debug: View the AI response
+
+      return response.trim().toLowerCase().includes('yes');
+    } catch (error) {
+      console.error('Error querying AI:', error);
+      return false; // Default to false in case of an error
+    }
+  };
+
+  const handleAddEntryPreValidation = async () => {
+    // First, validate the form details
+    if (!validateForm()) {
+      // Wait for the state to update before showing the snackbar
+      await new Promise(resolve => setTimeout(resolve, 0));
+      showSnackbar(validationError);
+      return;
+    }
+
+    // Then, check if the term is healthcare-related
+    const isValid = await isHealthcareRelated(newPrescription.name);
+    if (!isValid) {
+      showSnackbar("The term entered is not recognized as healthcare-related. Please enter a valid medication, food item, or healthcare product.");
+      return;
+    }
+
+    // Proceed if all validations pass
+    handleAddEntry();
+  };
+
+  const validateForm = () => {
+    const dosage = parseFloat(newPrescription.dosage);
+    const frequency = parseFloat(newPrescription.frequency);
+    const duration = parseFloat(newPrescription.duration);
+
+    if (newPrescription.name.trim() === '') {
+      setValidationError('Please enter a valid drug name.');
+      return false;
+    }
+    if (isNaN(dosage) || dosage <= 0) {
+      setValidationError('Dosage must be a positive number.');
+      return false;
+    }
+    if (isNaN(frequency) || frequency <= 0 || frequency > 24) {
+      setValidationError('Frequency must be a positive number and no more than 24 times per day.');
+      return false;
+    }
+    if (isNaN(duration) || duration <= 0 || duration > 365) {
+      setValidationError('Duration must be a positive number and no more than 365 days.');
+      return false;
+    }
+
+    // If all checks pass, clear the error message
+    setValidationError('');
+    return true;
+  };
+
+  const areFieldsFilled = () => {
+    return (
+      newPrescription.name.trim() !== '' &&
       newPrescription.dosage.trim() !== '' &&
       newPrescription.frequency.trim() !== '' &&
-      newPrescription.duration.trim() !== '';
+      newPrescription.duration.trim() !== ''
+    );
   };
+
+
+
 
 
 
@@ -353,10 +452,10 @@ function Dashboard() {
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancel</Button>
           <Button
-            onClick={handleAddEntry}
+            onClick={handleAddEntryPreValidation}
             variant="contained"
             color="primary"
-            disabled={!isFormValid()} // Button is disabled if form is not valid
+            disabled={!areFieldsFilled()} // Enable based on fields being filled
           >
             Add
           </Button>
@@ -375,6 +474,14 @@ function Dashboard() {
           <Button onClick={handleDeletePrescription} color="error">Delete</Button>
         </DialogActions>
       </Dialog>
+
+
+      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)}>
+        <Alert onClose={() => setSnackbarOpen(false)} severity="error" sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+
     </>
   );
 }

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase/firebaseConfig';
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { Button, TextField, Container, Typography, Box, Snackbar, Alert, Grid, Link, AppBar, Toolbar, Drawer, IconButton, useTheme } from '@mui/material';
-import { getDatabase, ref, set } from "firebase/database";
+import { getDatabase, ref, set, get } from "firebase/database";
 import { styled} from '@mui/system';
 import MenuIcon from '@mui/icons-material/Menu';
 
@@ -65,33 +65,40 @@ const Signup = () => {
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
 
-      // Get the display name and attempt to split it into first and last names
-      const fullName = user.displayName || "";
-      const names = fullName.split(' ');
-      const firstName = names[0] || "";
-      const lastName = names.slice(1).join(' ') || ""; // Join the remaining parts as the last name
+        // Reference to the user in the Realtime Database
+        const usersRef = ref(database, 'users/' + user.uid);
 
-      // Now, save user info in Realtime Database including the names
-      const usersRef = ref(database, 'users/' + user.uid);
-      await set(usersRef, {
-        email: user.email,
-        firstName: firstName, // Store the first name
-        lastName: lastName,   // Store the last name
-        profilePicture: user.photoURL, // You can also store the profile picture URL
-      });
+        // Check if the user already exists
+        const snapshot = await get(usersRef);
+        if (!snapshot.exists()) {
+            // If user does not exist, save their info in the Realtime Database
+            const fullName = user.displayName || "";
+            const names = fullName.split(' ');
+            const firstName = names[0] || "";
+            const lastName = names.slice(1).join(' ') || ""; // Join the remaining parts as the last name
 
-      setSnackbarMessage('Google sign-in successful. Welcome!');
-      setOpenSnackbar(true);
-      navigate('/dashboard');
-  } catch (error) {
-      console.error(error);
-      setSnackbarMessage('Google sign-in failed. Please try again.');
-      setOpenSnackbar(true);
+            await set(usersRef, {
+                email: user.email,
+                firstName: firstName, // Store the first name
+                lastName: lastName,   // Store the last name
+                profilePicture: user.photoURL, // Store the profile picture URL
+            });
+        }
+
+        // Whether new or existing user, navigate to dashboard and show success message
+        setSnackbarMessage('Google sign-in successful. Welcome!');
+        setOpenSnackbar(true);
+        navigate('/dashboard');
+    } catch (error) {
+        console.error(error);
+        setSnackbarMessage('Google sign-in failed. Please try again.');
+        setOpenSnackbar(true);
     }
-  };
+};
+
 
   //THIS SECTION IS KEVIN CODE. IT IS FOR THE BAR MENU AND THE SCROLL TO TOP FUNCTION
   const theme = useTheme();

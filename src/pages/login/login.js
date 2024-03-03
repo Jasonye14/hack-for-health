@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth} from '../../firebase/firebaseConfig'; // Adjust this path as needed
-import { getDatabase, ref, set} from "firebase/database";
+import { getDatabase, ref, set, get} from "firebase/database";
 import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
 import { Button, TextField, Container, Typography, Box, Grid, Link } from '@mui/material';
 
@@ -11,6 +11,8 @@ const Login = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const database = getDatabase();
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -36,30 +38,40 @@ const Login = () => {
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
 
-      // Extract name and photo URL
-      const fullName = user.displayName || "";
-      const names = fullName.split(' ');
-      const firstName = names[0] || "";
-      const lastName = names.slice(1).join(' ') || "";
+        // Reference to the user in the Realtime Database
+        const usersRef = ref(database, 'users/' + user.uid);
 
-      // Save user info in Realtime Database
-      const usersRef = ref(database, 'users/' + user.uid);
-      await set(usersRef, {
-        email: user.email,
-        firstName: firstName,
-        lastName: lastName,
-        profilePicture: user.photoURL,
-      });
+        // Check if the user already exists
+        const snapshot = await get(usersRef);
+        if (!snapshot.exists()) {
+            // If user does not exist, save their info in the Realtime Database
+            const fullName = user.displayName || "";
+            const names = fullName.split(' ');
+            const firstName = names[0] || "";
+            const lastName = names.slice(1).join(' ') || ""; // Join the remaining parts as the last name
 
-      navigate('/dashboard');
+            await set(usersRef, {
+                email: user.email,
+                firstName: firstName, // Store the first name
+                lastName: lastName,   // Store the last name
+                profilePicture: user.photoURL, // Store the profile picture URL
+            });
+        }
+
+        // Whether new or existing user, navigate to dashboard and show success message
+        setSnackbarMessage('Google sign-in successful. Welcome!');
+        setOpenSnackbar(true);
+        navigate('/dashboard');
     } catch (error) {
-      console.error(error);
-      setError('Google sign-in failed. Please try again.');
+        console.error(error);
+        setSnackbarMessage('Google sign-in failed. Please try again.');
+        setOpenSnackbar(true);
     }
-  };
+};
+
 
   return (
     <Container>

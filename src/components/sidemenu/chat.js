@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, List, ListItem, ListItemText, Paper, Typography, CircularProgress, Box } from '@mui/material';
+import { TextField, Button, List, ListItem, Paper, Typography, CircularProgress, Box } from '@mui/material';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const Chat = () => {

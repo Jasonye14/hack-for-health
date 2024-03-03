@@ -224,6 +224,7 @@ function Dashboard() {
       });
   };
 
+// eslint-disable-next-line
   const isFormValid = () => {
     const dosageValid = newPrescription.dosage > 0;
     const frequencyValid = newPrescription.frequency > 0 && newPrescription.frequency <= 24; // Assuming frequency per day

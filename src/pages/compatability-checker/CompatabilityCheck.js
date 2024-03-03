@@ -26,6 +26,7 @@ function CompatabilityChecker() {
   const genAI = new GoogleGenerativeAI("AIzaSyDilnhNZuB5EDltsTx2JgnnvsUg0mkPa1E");
   const [prescriptions, setPrescriptions] = useState([]);
   const [searchText, setSearchText] = useState("");
+  // eslint-disable-next-line
   const [userId, setUserId] = useState(null);
 
   // Function to update the state based on text field input

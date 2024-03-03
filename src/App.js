@@ -10,7 +10,7 @@ import Settings from './pages/settings/settings';
 import Checker from './pages/compatability-checker/CompatabilityCheck';
 import History from './pages/history/history';
 import NotFound from './pages/NotFound/notfound';
-import ProtectedRoute from './pages/protectedRoute/ProtectedRoute';
+//import ProtectedRoute from './pages/protectedRoute/ProtectedRoute';
 
 function App() {
   return (

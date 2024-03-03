@@ -1,9 +1,10 @@
-import React from "react";
+// ProtectedRoute.js
+import React from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../firebase/firebaseConfig'; // Import your useAuth hook
 
-function ProtectedRoute (props) {
-  return (
-    <>{props.children}</>
-  );
-}
+const ProtectedRoute = ({ children, publicPaths = [] }) => {
+
+};
 
 export default ProtectedRoute;

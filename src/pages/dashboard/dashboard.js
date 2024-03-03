@@ -24,7 +24,7 @@ import PharmacyIcon from '@mui/icons-material/LocalPharmacy';
 import compatibleIcons from '../../components/compatibleIcon/compatibleIcon';
 
 
-const endPrompt = `? Give a single response answer 'yes', 'no', 'maybe' in lowercase considering all the options. If the medicine isn't recognized, reply with 'maybe' and give a explanation as described in the next sentence. If 'no' or 'maybe', add colon, then a small description why. DON'T give anything else.`;
+const endPrompt = `? Give a single response answer 'yes', 'no', 'maybe' in lowercase considering all the options. If the medicine isn't recognized, reply with 'maybe' and give a explanation as described in the next sentence. If 'no' or 'maybe', add colon, then a small, detailed explanation why. DON'T give anything else.`;
 
 function Dashboard() {
   const genAI = new GoogleGenerativeAI("AIzaSyDilnhNZuB5EDltsTx2JgnnvsUg0mkPa1E");
@@ -73,7 +73,7 @@ function Dashboard() {
   // Check compatability w/ Gemini
   const checkCompatability = async () => {
     const currPrescNames = [...prescriptions.map(p => p.name)]
-    let prompt = `Is medicine ${newPrescription.name} compatible with ` + currPrescNames.join(", ") + endPrompt;
+    let prompt = `Is medicine '${newPrescription.name}' compatible with ` + currPrescNames.join(", ") + endPrompt;
     console.log(prompt)
     const res = await CheckCompatibleGemini(genAI, prompt);
     const responses = res.replace(/[\r\n]+/g, '').split(":");
@@ -198,6 +198,11 @@ function Dashboard() {
                     {p.name}
                   </Typography>
                   <Typography sx={{ color: 'text.secondary' }}>Added: {p.dateAdded}</Typography>
+                </Grid>
+                <Grid item>
+                  <Box className='compatible-icon-wrapper'>
+                    {compatibleIcons['yes']}
+                  </Box>
                 </Grid>
               </Grid>
             </AccordionSummary>

@@ -49,7 +49,7 @@ function CompatabilityChecker() {
   const checkCompatability = async (prescNames) => {
     let responses = []
     for (let i = 0; i < prescNames.length; i++) {
-      let prompt = `Is item/food/medicine ${searchText} compatible with ` + prescNames[i] + endPrompt;
+      let prompt = `Is item/food/medicine '${searchText}' compatible with '${prescNames[i]}'` + endPrompt;
       console.log(prompt);
       setSearchText("");
       let res = await CheckCompatibleGemini(genAI, prompt)

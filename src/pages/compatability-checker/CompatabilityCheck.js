@@ -45,14 +45,16 @@ function CompatabilityChecker() {
 
   // Check compatability w/ Gemini
   const checkCompatability = async (prescNames) => {
-    let prompt = `Given item: ${searchText}.` + endPrompt + prescNames.join(", ");
-    console.log(prompt);
-    setSearchText("");
-    let res = await CheckCompatibleGemini(genAI, prompt)
-    let responses = res.replace(/[\r\n]+/g, '').split("|"); // NEED to trim
-    console.log(responses);
+    let responses = []
+    for (let i = 0; i < prescNames.length; i++) {
+      let prompt = `Is item/food/medicine '${searchText}' compatible with '${prescNames[i]}'` + endPrompt;
+      console.log(prompt);
+      setSearchText("");
+      let res = await CheckCompatibleGemini(genAI, prompt)
+      responses.push(res.replace(/[\r\n]+/g, '')); // NEED to trim
+      console.log(responses);
+    }
 
-    console.log(responses);
     let changedPrescriptions = [...prescriptions] // NEED spread operator (need to make copy)
     setPrescriptions(changedPrescriptions.map((p, index) => {
       const vals = responses[index].trim().split(":");

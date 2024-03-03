@@ -84,7 +84,7 @@ function Dashboard() {
         return response
       }
     }
-    return response
+    return ['yes']
     // let prompt = `Is medicine '${newPrescription.name}' compatible with ` + currPrescNames.join(", ") + endPrompt;
     // console.log(prompt)
     // const res = await CheckCompatibleGemini(genAI, prompt);

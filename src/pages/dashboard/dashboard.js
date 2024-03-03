@@ -99,7 +99,6 @@ function Dashboard() {
       console.log(prompt);
       let res = await CheckCompatibleGemini(genAI, prompt)
       console.log(res)
-      let response
       response = res.trim().replace(/[\r\n]+/g, '').split(":"); // NEED to trim
       if (response[0] === 'no' || response[0] === 'maybe') {
         return response

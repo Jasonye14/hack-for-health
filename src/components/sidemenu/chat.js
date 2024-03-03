@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { TextField, Button, List, ListItem, Paper, Typography, CircularProgress, Box } from '@mui/material';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { auth } from '../../firebase/firebaseConfig';
-import { getDatabase, ref, set, get, onValue, push } from "firebase/database";
-import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { Message } from '@mui/icons-material';
+import { getDatabase, ref, set, onValue, push } from "firebase/database";
+import { onAuthStateChanged} from 'firebase/auth';
+//import { Message } from '@mui/icons-material';
 
 const Chat = () => {
   const [input, setInput] = useState('');
@@ -27,6 +27,7 @@ const Chat = () => {
         unsubscribe = fetchMessages(); // Assign the returned unsubscribe function
     }
     return () => unsubscribe && unsubscribe(); // Cleanup by calling unsubscribe
+    // eslint-disable-next-line
 }, [userId]);
 
 

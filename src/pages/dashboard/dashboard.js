@@ -88,21 +88,19 @@ function Dashboard() {
       let prompt = `Is medicine '${newPrescription.name}' compatible with '${currPrescNames[i]}'` + endPrompt;
       console.log(prompt);
       let res = await CheckCompatibleGemini(genAI, prompt)
+      console.log(res)
       response = res.trim().replace(/[\r\n]+/g, '').split(":"); // NEED to trim
+      console.log(response)
       if (response[0] === 'no' || response[1] === 'maybe') {
         return response
       }
     }
     return ['yes']
-    // let prompt = `Is medicine '${newPrescription.name}' compatible with ` + currPrescNames.join(", ") + endPrompt;
-    // console.log(prompt)
-    // const res = await CheckCompatibleGemini(genAI, prompt);
-    // const responses = res.replace(/[\r\n]+/g, '').split(":");
-    // return responses;
   }
 
   // POST prescription to Firebase
   const handlePostFirebase = (compatible, compatibleDesc) => {
+    console.log(compatible);
     if (!userId) return; // Ensure we have a user ID
     const db = getDatabase();
     const userPrescriptionsRef = ref(db, `/users/${userId}/prescriptions`);

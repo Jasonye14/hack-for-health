@@ -21,7 +21,7 @@ import CheckCompatibleGemini from '../../functions/gemini_compatible_checker';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import compatibleIcons from '../../components/compatibleIcon/compatibleIcon';
 
-const endPrompt = "As a healthcare expert, analyze the compatibility of the following item with the listed prescriptions. For each prescription, provide your evaluation using only 'yes', 'no', or 'maybe' in lowercase. Format your responses with a vertical bar '|' separating each. When the item is not clearly identifiable as a prescription, food, or consumable product, or when there's ambiguity, answer with 'maybe', followed by a brief explanation. For 'no' or 'maybe' responses, include a concise rationale immediately following. Ensure each prescription's compatibility assessment is distinct and justified, adhering to the format without adding extraneous details. The prescriptions are as follows: ";
+const endPrompt = `? Give a single response answer 'yes', 'no', 'maybe' in lowercase considering all the options. If the item/food/medicine isn't recognized, reply with 'maybe' and give a explanation as described in the next sentence. If 'no' or 'maybe', add colon, then a small, detailed explanation why. DON'T give anything else.`;
 function CompatabilityChecker() {
   const genAI = new GoogleGenerativeAI("AIzaSyDilnhNZuB5EDltsTx2JgnnvsUg0mkPa1E");
   const [prescriptions, setPrescriptions] = useState([]);

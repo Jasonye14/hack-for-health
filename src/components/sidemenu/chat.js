@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, List, ListItem, Paper, Typography, CircularProgress, Box } from '@mui/material';
+import { TextField, Button, List, ListItem, Paper, Typography, CircularProgress, Box, Card, CardActionArea, CardContent} from '@mui/material';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { auth } from '../../firebase/firebaseConfig';
 import { getDatabase, ref, onValue, push } from "firebase/database";
@@ -12,6 +12,7 @@ const Chat = () => {
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState(null);
   const [showPrompts, setShowPrompts] = useState(true); 
+  const [promptSelected, setPromptSelected] = useState(false);
 
    // Predefined prompts related to health services
    const predefinedPrompts = [
@@ -20,6 +21,11 @@ const Chat = () => {
     { title: "Dosage Recommendations", prompt: "Recommended dosage for drug Z for condition C" },
     { title: "General Health Advice", prompt: "General advice on managing condition D with medication E" },
   ];
+
+  const selectPrompt = (prompt) => {
+    setInput(prompt);
+    setPromptSelected(true); // Hide the prompt selection board
+  };
 
   const genAI = new GoogleGenerativeAI("AIzaSyDilnhNZuB5EDltsTx2JgnnvsUg0mkPa1E");
 
@@ -134,6 +140,25 @@ const Chat = () => {
     </ListItem>
   );
 
+  const PromptSelectionBoard = () => (
+    <Box sx={{ display: 'flex', justifyContent: 'space-around', marginBottom: '20px', overflowX: 'auto' }}>
+      {predefinedPrompts.map((item, index) => (
+        <Card key={index} sx={{ width: '240px', backgroundColor: '#2D3748', color: '#E2E8F0', marginRight: '10px', '&:last-child': { marginRight: 0 } }}>
+          <CardActionArea onClick={() => selectPrompt(item.prompt)}>
+            <CardContent>
+              <Typography gutterBottom variant="h5" component="div">
+                {item.title}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {item.prompt}
+              </Typography>
+            </CardContent>
+          </CardActionArea>
+        </Card>
+      ))}
+    </Box>
+  );
+
   return (
     <Paper sx={{
       backgroundColor: '#1A202C',
@@ -142,10 +167,10 @@ const Chat = () => {
       padding: '20px',
     }}>
       <Typography variant="h4" align="center" gutterBottom sx={{ color: '#E2E8F0' }}>
-        Gemini Chat
+        Health Chat Assistant
       </Typography>
       <List id="chatList" sx={{
-        maxHeight: '70vh',
+        maxHeight: promptSelected ? 'calc(100vh - 180px)' : 'calc(100vh - 260px)', //dynamic chat area adjustment
         overflow: 'auto',
         backgroundColor: '#2D3748',
         color: '#E2E8F0',
@@ -162,6 +187,7 @@ const Chat = () => {
           </ListItem>
         )}
       </List>
+      {!promptSelected && <PromptSelectionBoard />} {/* Only display the prompt board if no prompt has been selected */}
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <TextField
           fullWidth
@@ -187,8 +213,8 @@ const Chat = () => {
           }}
           label="Type your message here..."
           value={input}
-          onChange={handleInputChange}
-          onKeyPress={handleKeyPress}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && !loading && sendMessage(input)}
           disabled={loading}
         />
         <Button

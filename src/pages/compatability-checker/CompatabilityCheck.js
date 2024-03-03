@@ -155,9 +155,6 @@ function CompatabilityChecker() {
                       {compatibleIcons[p.compatible]}
                     </Box>
                   </Grid>
-                  <Grid item>
-                    <Box component="img" alt={p.name} src={p.imageUrl} className='panel-image'></Box>
-                  </Grid>
                   <Grid item xs>
                     <Typography variant="h6" sx={{ width: '90%', flexShrink: 0 }}>
                       {p.name}

@@ -30,11 +30,7 @@ const compatibleIcons = {
   'pending': <PendingIcon className='pcompatible-icon'/>
 }
 
-const endPrompt = "? Give a single response answer 'yes', 'no', 'maybe' in lowercase for every given prescription separated by commas."
-                + "If the object/food given isn't recognized, reply with 'maybe' and give a "
-                + "explanation as described in the next sentence. If 'no' or 'maybe', "
-                + "add colon next to the no/maybe, then a short but detailed description why. DON'T give anything else."
-                + "I NEED a response to every drug/prescription given.";
+const endPrompt = "Analyze the compatibility of the following prescriptions with the given item/object. For each prescription provided, respond with a single word: 'yes', 'no', or 'maybe', all in lowercase. Separate your responses for each prescription with a vertical bar '|'. If a given item isn't recognized as a prescription or food or if there's any uncertainty, respond with 'maybe', followed by a colon and a brief yet comprehensive explanation. In cases where the answer is 'no' or 'maybe', similarly provide a colon and then detail the reasoning in a concise manner. Do not include any additional information beyond these instructions. It's imperative to offer a response and an explanation for every drug or prescription mentioned. The prescriptions are as follows: ";
 
 function CompatabilityChecker() {
   const genAI = new GoogleGenerativeAI("AIzaSyDilnhNZuB5EDltsTx2JgnnvsUg0mkPa1E");
@@ -48,15 +44,14 @@ function CompatabilityChecker() {
   };
 
   // Check compatability w/ Gemini
-  const checkCompatability = (prescNames) => {
-    let prompt = `Is/Are ${searchText} compatible with ` + prescNames.join(", ") + endPrompt;
-    setSearchText("");
+  const checkCompatability = async (prescNames) => {
+    let prompt = `Given item: ${searchText}.` + endPrompt + prescNames.join(", ");
     console.log(prompt);
-    CheckCompatibleGemini(genAI, prompt).then((res) => {
-      let responses = res.trim().split(","); // NEED to trim
-      console.log(responses);
-      setGeminiResponse(responses);
-    });
+    setSearchText("");
+    let res = await CheckCompatibleGemini(genAI, prompt)
+    let responses = res.replace(/[\r\n]+/g, '').split("|"); // NEED to trim
+    console.log(responses);
+    setGeminiResponse(responses);
   }
 
   const handleSearch = (event) => {

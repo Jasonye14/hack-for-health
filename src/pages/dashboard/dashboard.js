@@ -73,18 +73,19 @@ function Dashboard() {
 
   // Check compatability w/ Gemini
   const checkCompatability = async () => {
-    let response = "";
+    let response = [];
 
     const currPrescNames = [...prescriptions.map(p => p.name)]
     for (let i = 0; i < currPrescNames.length; i++) {
       let prompt = `Is medicine '${newPrescription.name}' compatible with '${currPrescNames[i]}'` + endPrompt;
       console.log(prompt);
       let res = await CheckCompatibleGemini(genAI, prompt)
-      response = res.replace(/[\r\n]+/g, '').split(":"); // NEED to trim
+      response = res.trim().replace(/[\r\n]+/g, '').split(":"); // NEED to trim
       if (response[0] === 'no' || response[1] === 'maybe') {
         return response
       }
     }
+    return response
     // let prompt = `Is medicine '${newPrescription.name}' compatible with ` + currPrescNames.join(", ") + endPrompt;
     // console.log(prompt)
     // const res = await CheckCompatibleGemini(genAI, prompt);

@@ -24,7 +24,7 @@ import PharmacyIcon from '@mui/icons-material/LocalPharmacy';
 import compatibleIcons from '../../components/compatibleIcon/compatibleIcon';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const endPrompt = `? Give a single response answer 'yes', 'no', 'maybe' in lowercase considering all the options. If the item/food/medicine isn't recognized, reply with 'maybe' and give a explanation as described in the next sentence. If 'no' or 'maybe', add colon, then a small, detailed explanation why. DON'T give anything else.`;
+const endPrompt = `? Give a single response answer 'yes', 'no', 'maybe' in lowercase considering all the options. If the item/food/medicine isn't recognized, reply with 'maybe' and give a explanation as described in the next sentence. If 'no' or 'maybe', add colon, then a small, detailed explanation why. DON'T give anything else. There should only be 1 'yes', 'no', or 'maybe'`;
 
 function Dashboard() {
   const genAI = new GoogleGenerativeAI("AIzaSyDilnhNZuB5EDltsTx2JgnnvsUg0mkPa1E");
@@ -72,21 +72,33 @@ function Dashboard() {
 
   // Check compatability w/ Gemini
   const checkCompatability = async () => {
-    let response = [];
-
-    const currPrescNames = [...prescriptions.map(p => p.name)]
+    const currPrescNames = []
+    let response = []
+    for (let i = 0; i < prescriptions.length; i++) {
+      currPrescNames.push(prescriptions[i].name)
+    } 
+    if (prescriptions.length === 0) {
+      let prompt = `Is '${newPrescription.name}' a medicine?'` + endPrompt;
+      let res = await CheckCompatibleGemini(genAI, prompt)
+      response = res.trim().replace(/[\r\n]+/g, '').split(":"); // NEED to trim
+      console.log(response[0])
+      if (response[0] === 'no' || response[0] === 'maybe') {
+        return response
+      }
+    }
     for (let i = 0; i < currPrescNames.length; i++) {
       let prompt = `Is medicine '${newPrescription.name}' compatible with '${currPrescNames[i]}'` + endPrompt;
       console.log(prompt);
       let res = await CheckCompatibleGemini(genAI, prompt)
       console.log(res)
+      let response
       response = res.trim().replace(/[\r\n]+/g, '').split(":"); // NEED to trim
-      console.log(response)
-      if (response[0] === 'no' || response[1] === 'maybe') {
+      console.log(response[0])
+      if (response[0] === 'no' || response[0] === 'maybe') {
         return response
       }
     }
-    return ['yes']
+    return response;
   }
 
   // POST prescription to Firebase

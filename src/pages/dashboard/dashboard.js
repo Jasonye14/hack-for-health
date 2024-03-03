@@ -25,7 +25,7 @@ import compatibleIcons from '../../components/compatibleIcon/compatibleIcon';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 
-const endPrompt = `? Give a single response answer 'yes', 'no', 'maybe' in lowercase considering all the options. If the medicine isn't recognized, reply with 'maybe' and give a explanation as described in the next sentence. If 'no' or 'maybe', add colon, then a small, detailed explanation why. DON'T give anything else.`;
+const endPrompt = `? Give a single response answer 'yes', 'no', 'maybe' in lowercase considering all the options. If the medicine isn't recognized, reply with 'maybe' and give a explanation as described in the next sentence. If 'no' or 'maybe', add colon, then a small, detailed explanation why. You must consider whether the given medicine is actually a medicine and whether the thing being compared to is a medicine. DON'T give anything else.`;
 
 function Dashboard() {
   const genAI = new GoogleGenerativeAI("AIzaSyDilnhNZuB5EDltsTx2JgnnvsUg0mkPa1E");
@@ -73,12 +73,24 @@ function Dashboard() {
 
   // Check compatability w/ Gemini
   const checkCompatability = async () => {
+    let response = [];
+
     const currPrescNames = [...prescriptions.map(p => p.name)]
-    let prompt = `Is medicine '${newPrescription.name}' compatible with ` + currPrescNames.join(", ") + endPrompt;
-    console.log(prompt)
-    const res = await CheckCompatibleGemini(genAI, prompt);
-    const responses = res.replace(/[\r\n]+/g, '').split(":");
-    return responses;
+    for (let i = 0; i < currPrescNames.length; i++) {
+      let prompt = `Is medicine '${newPrescription.name}' compatible with '${currPrescNames[i]}'` + endPrompt;
+      console.log(prompt);
+      let res = await CheckCompatibleGemini(genAI, prompt)
+      response = res.trim().replace(/[\r\n]+/g, '').split(":"); // NEED to trim
+      if (response[0] === 'no' || response[1] === 'maybe') {
+        return response
+      }
+    }
+    return response
+    // let prompt = `Is medicine '${newPrescription.name}' compatible with ` + currPrescNames.join(", ") + endPrompt;
+    // console.log(prompt)
+    // const res = await CheckCompatibleGemini(genAI, prompt);
+    // const responses = res.replace(/[\r\n]+/g, '').split(":");
+    // return responses;
   }
 
   // POST prescription to Firebase
@@ -110,7 +122,7 @@ function Dashboard() {
     });
   }
 
-  // Retrieve data from 
+  // Retrieve data from firebase
   const updatePrescriptions = () => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {

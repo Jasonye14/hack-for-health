@@ -28,10 +28,10 @@ function RoutesContent() {
       <Route path='/login' element={<Login />} />
       <Route path='/dashboard' element={  <Dashboard/> } />
       <Route path='/compatability-checker' element={  <Checker/>} />
-      <Route path='/gemini-chat-bot' element={<ProtectedRoute>  <ChatBotPage/> </ProtectedRoute>} />
-      <Route path='/history' element={<ProtectedRoute > <History/> </ProtectedRoute>} />
-      <Route path='/settings' element={<ProtectedRoute> <Settings/>  </ProtectedRoute>} />
-      <Route path='/my-prescriptions' element={<ProtectedRoute><Dashboard/></ProtectedRoute>} />
+      <Route path='/gemini-chat-bot' element={  <ChatBotPage/> } />
+      <Route path='/history' element={ <History/>  }/>
+      <Route path='/settings' element={ <Settings/>  } />
+      <Route path='/my-prescriptions' element={<Dashboard/>} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

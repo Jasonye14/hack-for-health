@@ -7,39 +7,25 @@ import {
 } from '@mui/material';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-//firebase
-import { getDatabase, ref, set, push, onValue, off } from 'firebase/database';
+// Firebase
+import { getDatabase, ref, onValue, off } from 'firebase/database';
 import { auth } from '../../firebase/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
-
-// Icons
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
-import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
-import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
-import PendingIcon from '@mui/icons-material/Pending';
 
 // Custom Components
 import '../dashboard/dashboard.css';
 import SideMenu from '../../components/sidemenu/SideMenu';
 import CheckCompatibleGemini from '../../functions/gemini_compatible_checker';
 
-// Fake data
-import fakePrescriptions from '../dashboard/fake_data';
+// Icons
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import compatibleIcons from '../../components/compatibleIcon/compatibleIcon';
 
-// Compatability Icons
-const compatibleIcons = {
-  'yes': <CheckOutlinedIcon className='compatible-icon'/>,
-  'no': <ClearOutlinedIcon className='noncompatible-icon'/>,
-  'maybe': <ReportProblemOutlinedIcon className='mcompatible-icon'/>,
-  'pending': <PendingIcon className='pcompatible-icon'/>
-}
-
-const endPrompt = "Analyze the compatibility of the following prescriptions with the given item/object. For each prescription provided, respond with a single word: 'yes', 'no', or 'maybe', all in lowercase. Separate your responses for each prescription with a vertical bar '|'. If a given item isn't recognized as a prescription or food or if there's any uncertainty, respond with 'maybe', followed by a colon and a brief yet comprehensive explanation. In cases where the answer is 'no' or 'maybe', similarly provide a colon and then detail the reasoning in a concise manner. Do not include any additional information beyond these instructions. It's imperative to offer a response and an explanation for every drug or prescription mentioned. The prescriptions are as follows: ";
+const endPrompt = "Analyze the compatibility of the given item/object with medicines given. For each prescription provided, respond with a single word: 'yes', 'no', or 'maybe', all in lowercase. Separate your responses for each prescription with a vertical bar '|'. If a given item isn't recognized as a prescription or food or if there's any uncertainty, respond with 'maybe', followed by a colon and a brief yet comprehensive explanation. In cases where the answer is 'no' or 'maybe', similarly provide a colon and then detail the reasoning in a concise manner. Do not include any additional information beyond these instructions. It's imperative to offer a response and an explanation for every drug or prescription mentioned. The prescriptions are as follows: ";
 
 function CompatabilityChecker() {
   const genAI = new GoogleGenerativeAI("AIzaSyDilnhNZuB5EDltsTx2JgnnvsUg0mkPa1E");
-  const [prescriptions, setPrescriptions] = useState(fakePrescriptions);
+  const [prescriptions, setPrescriptions] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [userId, setUserId] = useState(null);
 
@@ -73,7 +59,7 @@ function CompatabilityChecker() {
       const vals = responses[index].trim().split(":");
       p.compatible = vals[0]
       if (vals.length > 1) {
-        p.compatibleDetails = vals[1];
+        p.compatibleDesc = vals[1];
       }
       return p;
     }));
@@ -121,6 +107,7 @@ function CompatabilityChecker() {
           id: key,
           ...prescriptionsData[key],
         }));
+        console.log(formattedPrescriptions)
         setPrescriptions(formattedPrescriptions);
       } else {
         setPrescriptions([]);
@@ -151,12 +138,7 @@ function CompatabilityChecker() {
         <Typography variant="h4" gutterBottom>
           Compatible with Current Prescriptions?
         </Typography>
-        {prescriptions ?
-          <Typography variant="h6" gutterBottom>
-            Nothing here!
-          </Typography>
-        :
-          prescriptions.map((p) => (
+        {prescriptions.map((p) => (
             <Accordion
               key={p.id}
               expanded={p.expanded}
@@ -203,7 +185,7 @@ function CompatabilityChecker() {
                   </Grid>
                   <Grid item xs={12}>
                     <Typography>
-                      Compatability Details: {p.compatibleDetails}
+                      Compatability Details: {p.compatibleDesc}
                     </Typography>
                   </Grid>
                 </Grid>

@@ -2,53 +2,27 @@ import React, { useEffect, useState } from 'react';
 import {
   Container,Typography,
   Accordion,AccordionSummary,
-  AccordionDetails,Grid,Avatar,
-  CssBaseline,ThemeProvider,
-  createTheme,Drawer,Button,
-  List,ListItem,ListItemIcon,
-  ListItemText,Box,Divider, Dialog, DialogTitle,
+  AccordionDetails,Grid,Button,
+  Box, Dialog, DialogTitle,
   DialogActions, DialogContent, TextField
 } from '@mui/material';
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { v4 as uuidv4 } from 'uuid';
-
-
-// Icons
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import MenuIcon from '@mui/icons-material/Menu';
-import PharmacyIcon from '@mui/icons-material/LocalPharmacy';
-import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import SettingsIcon from '@mui/icons-material/Settings';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
-import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
-import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
-import PendingIcon from '@mui/icons-material/Pending';
 
 // Custom Components
 import './dashboard.css';
 import SideMenu from '../../components/sidemenu/SideMenu';
 import CheckCompatibleGemini from '../../functions/gemini_compatible_checker';
 
-// Images
-import Amox from '../../images/amoxicillin-nobg.png';
-import Aceto from '../../images/aceto_nobg.png';
-
-// Fake data
-import fakePrescriptions from './fake_data';
-
-//firebase
+// Firebase
 import { getDatabase, ref, set, push, onValue, off } from 'firebase/database';
 import { auth } from '../../firebase/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 
-const compatibleIcons = {
-  'yes': <CheckOutlinedIcon className='compatible-icon'/>,
-  'no': <ClearOutlinedIcon className='compatible-icon'/>,
-  'maybe': <ReportProblemOutlinedIcon className='compatible-icon'/>,
-  'pending': <PendingIcon className='compatible-icon'/>
-}
+// Icons
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import PharmacyIcon from '@mui/icons-material/LocalPharmacy';
+import compatibleIcons from '../../components/compatibleIcon/compatibleIcon';
+
 
 const endPrompt = `? Give a single response answer 'yes', 'no', 'maybe' in lowercase considering all the options. If the medicine isn't recognized, reply with 'maybe' and give a explanation as described in the next sentence. If 'no' or 'maybe', add colon, then a small description why. DON'T give anything else.`;
 
@@ -65,7 +39,7 @@ function Dashboard() {
     dateAdded:'',
     expanded: false,
     compatible: 'pending',
-    compatibleDetails: ''
+    compatibleDesc: ''
   });
 
   const handleOpenDialog = () => setOpenDialog(true);
@@ -128,7 +102,7 @@ function Dashboard() {
         dateAdded: '',
         expanded: false,
         compatible: "pending",
-        compatibleDetails: "Nothing here..."
+        compatibleDesc: "Nothing here..."
       });
     }).catch((error) => {
       console.error("Could not add prescription: ", error);
@@ -233,17 +207,22 @@ function Dashboard() {
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <Typography>
-                    Details: {p.details}
+                    Dosage: {p.dosage}
                   </Typography>
                 </Grid>
                 <Grid item xs={12}>
                   <Typography>
-                    Schedule: {p.schedule}
+                    Frequency: {p.frequency}
                   </Typography>
                 </Grid>
                 <Grid item xs={12}>
                   <Typography>
-                    Compatability Details:<br/> {p.compatibleDetails}
+                    Duration: {p.duration}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>
+                    Compatability Details: {p.compatibleDesc ?? "Nothing here..."}
                   </Typography>
                 </Grid>
               </Grid>

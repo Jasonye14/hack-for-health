@@ -4,7 +4,7 @@ const fakePrescriptions = [
     name: 'Amoxicillin',
     dosage: '500mg',
     frequency: 'Every 8 hours',
-    duration: '7 days',
+    duration: '2',
     dateAdded: '2024-03-05',
     expanded: false,
     compatible: 'yes',

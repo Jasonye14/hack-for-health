@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase/firebaseConfig'; // Adjust this path as needed
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { Button, TextField, Container, Typography, Box, Snackbar, Alert, Grid, Link, AppBar, Toolbar, Drawer, List, ListItem, ListItemText, IconButton } from '@mui/material';
+import { Button, TextField, Container, Typography, Box, Snackbar, Alert, Grid, Link, AppBar, Toolbar, Drawer, IconButton, useTheme } from '@mui/material';
 import { getDatabase, ref, set } from "firebase/database";
 import { styled} from '@mui/system';
-import logo from '../../images/PillPair.webp'; 
 import MenuIcon from '@mui/icons-material/Menu';
 
 
@@ -95,10 +94,7 @@ const Signup = () => {
   };
 
   //THIS SECTION IS KEVIN CODE. IT IS FOR THE BAR MENU AND THE SCROLL TO TOP FUNCTION
-  const [loading, setLoading] = React.useState(false);
-
-  const delay = (duration) => new Promise(resolve => setTimeout(resolve, duration));
-
+  const theme = useTheme();
 
   const [state, setState] = React.useState({
     mobileView: false,
@@ -106,13 +102,6 @@ const Signup = () => {
   });
 
   const { mobileView, drawerOpen } = state;
-  
-  const handleSignInClick = async () => {
-    setLoading(true);
-    await delay(500); // Wait for .5 seconds
-    setLoading(false);
-    navigate('/login');
-  };
 
   React.useEffect(() => {
     const setResponsiveness = () => {
@@ -132,11 +121,16 @@ const Signup = () => {
     },
   }));
 
+  const handleHomeClick = async () => {
+    navigate('/');
+  };
+
   const displayDesktop = () => {
     return (
       <Toolbar>
-        <HoverButton color="inherit" style={{ color: "white" }} >Home</HoverButton>
-        <HoverButton color="inherit" style={{ color: "white" }} >Sign In</HoverButton>
+        <HoverButton color="inherit" style={{ color: "white", fontSize: "1.2rem" }} onClick={handleHomeClick}>
+          Home
+        </HoverButton>
       </Toolbar>
     );
   };
@@ -168,18 +162,16 @@ const Signup = () => {
             onClose: handleDrawerClose,
           }}
         >
-          <List>
+          {/* <List>
             {['Home', 'About', 'Contact', 'Credits'].map((text, index) => (
               <ListItem button key={text}>
                 <ListItemText primary={text} />
               </ListItem>
             ))}
-          </List>
+          </List> */}
         </Drawer>
 
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          Logo
-        </Typography>
+        
       </Toolbar>
     );
   };
@@ -194,91 +186,87 @@ const Signup = () => {
   };
 
   return (
-    <Container>
-      <AppBar position="sticky" style={{ backgroundColor: '#121212', boxShadow: 'none' }}>
+    <Container style={{ width: '100%', height: '100vh' }}>
+        <AppBar position="static" style={{ backgroundColor: theme.palette.background.default }} elevation={0}>
           <Toolbar style={{ padding: '20px' }}>
-            <img src={logo} alt="PillPair" style={{ height: '40px', marginRight: '10px' }}  />
-            <Typography variant="h4" component="div" style={{ flexGrow: 1, color: 'white' }} >
+            <Typography variant="h3" component="div" style={{ flexGrow: 1, color: 'white' }} >
               PillPair
             </Typography>
             {mobileView ? displayMobile() : displayDesktop()}
           </Toolbar>
         </AppBar>
-      <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Grid container>
-          <Grid item xs>
-            <Link href='/' variant="body10">
-              Go back 
-            </Link>
-          </Grid>
-        </Grid>
-      </Box>
-      <Container sx={{ marginTop: -7, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-        <Box sx={{ width: '100%', maxWidth: 450, textAlign: 'center' }}>
-          <Typography variant="h4" sx={{ mb: 2 }}>Sign Up</Typography>         
-          <Box component="form" onSubmit={handleSignup} noValidate>
-            <TextField
-              fullWidth
-              variant="outlined"
-              margin="normal"
-              required
-              label="First Name"
-              type="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <TextField
-              fullWidth
-              variant="outlined"
-              margin="normal"
-              required
-              label="Last Name"
-              type="lastName"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-            />
-            <TextField
-              fullWidth
-              variant="outlined"
-              margin="normal"
-              required
-              label="Email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <TextField
-              fullWidth
-              variant="outlined"
-              margin="normal"
-              required
-              label="Password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-              Sign Up
-            </Button>
-
-            <Button fullWidth variant="outlined" sx={{ mt: 1, mb: 2 }} onClick={signInWithGoogle}>
-              Sign up with Google
-            </Button>
-
-            <Grid container>
-              <Grid item xs>
-                <Link href='\login' variant="body2">
-                  Already have an account?
-                </Link>
-              </Grid>
+      <Box sx={{ marginTop: -3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Grid container>
+            <Grid item xs>
             </Grid>
-          </Box>
+          </Grid>
         </Box>
-        <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
-          <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
-            {snackbarMessage}
-          </Alert>
-        </Snackbar>
+        <Container sx={{ marginTop: -7, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+          <Box sx={{ width: '100%', maxWidth: 450, textAlign: 'center' }}>
+            <Typography variant="h4" sx={{ mb: 2 }}>Sign Up</Typography>         
+            <Box component="form" onSubmit={handleSignup} noValidate>
+              <TextField
+                fullWidth
+                variant="outlined"
+                margin="normal"
+                required
+                label="First Name"
+                type="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <TextField
+                fullWidth
+                variant="outlined"
+                margin="normal"
+                required
+                label="Last Name"
+                type="lastName"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+              />
+              <TextField
+                fullWidth
+                variant="outlined"
+                margin="normal"
+                required
+                label="Email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <TextField
+                fullWidth
+                variant="outlined"
+                margin="normal"
+                required
+                label="Password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+                Sign Up
+              </Button>
+
+              <Button fullWidth variant="outlined" sx={{ mt: 1, mb: 2 }} onClick={signInWithGoogle}>
+                Sign up with Google
+              </Button>
+
+              <Grid container>
+                <Grid item xs>
+                  <Link href='\login' variant="body2">
+                    Already have an account?
+                  </Link>
+                </Grid>
+              </Grid>
+            </Box>
+          </Box>
+          <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+            <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
+              {snackbarMessage}
+            </Alert>
+          </Snackbar>
         </Container>
     </Container>
   );

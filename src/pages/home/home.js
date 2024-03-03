@@ -42,9 +42,10 @@ const VideoBackground = styled('video')({
   position: 'absolute',
   right: 0,
   bottom: 0,
-  minWidth: '100%',
-  minHeight: '100%',
-  zIndex: 0,
+  width: '100%', // Ensure it covers the full width
+  height: '100%', // Ensure it covers the full height
+  objectFit: 'cover', // Cover the area without losing aspect ratio
+  zIndex: 0, // Keep it behind all other content
 });
 
 const Home = () => {
@@ -100,14 +101,14 @@ const Home = () => {
   const displayDesktop = () => {
     return (
       <Toolbar>
-        <HoverButton color="inherit" style={{ color: "black" }} onClick={scrollToTop}>Home</HoverButton>
+        <HoverButton color="inherit" style={{ color: "black", fontSize: "1.1rem" }} onClick={scrollToTop}>Home</HoverButton>
         <Link to="about" smooth={true} duration={500}>
-          <HoverButton color="inherit" style={{ color: "black" }}>About</HoverButton>
+          <HoverButton color="inherit" style={{ color: "black", fontSize: "1.1rem" }}>About</HoverButton>
         </Link>
         <Link to="contact" smooth={true} duration={500}>
-          <HoverButton color="inherit" style={{ color: "black" }}>Contact</HoverButton>
+          <HoverButton color="inherit" style={{ color: "black", fontSize: "1.1rem" }}>Contact</HoverButton>
         </Link>
-        <HoverButton color="inherit" style={{ color: "black" }} onClick={handleSignInClick}>Sign In</HoverButton>
+        <HoverButton color="inherit" style={{ color: "black", fontSize: "1.1rem" }} onClick={handleSignInClick}>Sign In</HoverButton>
       </Toolbar>
     );
   };
@@ -175,7 +176,7 @@ const Home = () => {
         </AppBar>
         <StyledDiv>
           <ContentDiv>
-          <Typography variant="h2" component="h2" style={{ color: '#fff', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)' }}>
+          <Typography variant="h2" component="h2" style={{ color: 'white', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)', backdropFilter: 'blur(1.5px)' }}>
             WHERE HEALTHCARE MEETS HARMONY
           </Typography>
             <Button variant="contained" style={{ backgroundColor: '#add8e6', color: '#333', fontSize: '20px', padding: '10px 20px' }} onClick={handleGetStartedClick}>

@@ -7,6 +7,11 @@ import {
 } from '@mui/material';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+//firebase
+import { getDatabase, ref, set, push, onValue, off } from 'firebase/database';
+import { auth } from '../../firebase/firebaseConfig';
+import { onAuthStateChanged } from 'firebase/auth';
+
 // Icons
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
@@ -35,12 +40,22 @@ const endPrompt = "Analyze the compatibility of the following prescriptions with
 function CompatabilityChecker() {
   const genAI = new GoogleGenerativeAI("AIzaSyDilnhNZuB5EDltsTx2JgnnvsUg0mkPa1E");
   const [prescriptions, setPrescriptions] = useState(fakePrescriptions);
-  const [geminiResponse, setGeminiResponse] = useState(null);
   const [searchText, setSearchText] = useState("");
+  const [userId, setUserId] = useState(null);
 
   // Function to update the state based on text field input
   const handleTextFieldChange = (event) => {
     setSearchText(event.target.value);
+  };
+
+  // Expand/shrink panel
+  const handlePanelClick = (prescID) => {    
+    let changedPrescriptions = [...prescriptions] // NEED spread operator (need to make copy)
+    const prescToModify = changedPrescriptions.find(p => p.id === prescID);
+    if (prescToModify) {
+      prescToModify['expanded'] = !(prescToModify['expanded']); // Expand/shrink
+    }
+    setPrescriptions(changedPrescriptions);
   };
 
   // Check compatability w/ Gemini
@@ -51,7 +66,17 @@ function CompatabilityChecker() {
     let res = await CheckCompatibleGemini(genAI, prompt)
     let responses = res.replace(/[\r\n]+/g, '').split("|"); // NEED to trim
     console.log(responses);
-    setGeminiResponse(responses);
+
+    console.log(responses);
+    let changedPrescriptions = [...prescriptions] // NEED spread operator (need to make copy)
+    setPrescriptions(changedPrescriptions.map((p, index) => {
+      const vals = responses[index].trim().split(":");
+      p.compatible = vals[0]
+      if (vals.length > 1) {
+        p.compatibleDetails = vals[1];
+      }
+      return p;
+    }));
   }
 
   const handleSearch = (event) => {
@@ -68,30 +93,40 @@ function CompatabilityChecker() {
     checkCompatability(prescNames);
   }
 
-  useEffect(() => {
-    console.log(prescriptions);
-    if (geminiResponse) {
-      console.log(geminiResponse);
-      let changedPrescriptions = [...prescriptions] // NEED spread operator (need to make copy)
-      setPrescriptions(changedPrescriptions.map((p, index) => {
-        const responses = geminiResponse[index].trim().split(":");
-        p.compatible = responses[0].trim();
-        if (responses.length > 1) {
-          p.compatibleDetails = responses[1];
-        }
-        return p;
-      }));
-      setGeminiResponse(null);
-    }
-  }, [prescriptions, geminiResponse]);
 
-  const handlePanelClick = (prescID) => {    
-    let changedPrescriptions = [...prescriptions] // NEED spread operator (need to make copy)
-    const prescToModify = changedPrescriptions.find(p => p.id === prescID);
-    if (prescToModify) {
-      prescToModify['expanded'] = !(prescToModify['expanded']); // Expand/shrink
-    }
-    setPrescriptions(changedPrescriptions);
+  // Load data from Firebase
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserId(user.uid);
+        fetchPrescriptions(user.uid);
+      } else {
+        setUserId(null);
+        setPrescriptions([]);
+      }
+    });
+
+    return () => unsubscribe(); // Cleanup subscription
+  }, []);
+
+  // GET user prescriptions from Firebase
+  const fetchPrescriptions = (uid) => {
+    const db = getDatabase();
+    const userPrescriptionsRef = ref(db, `/users/${uid}/prescriptions`);
+    
+    onValue(userPrescriptionsRef, (snapshot) => {
+      const prescriptionsData = snapshot.val();
+      if (prescriptionsData) {
+        const formattedPrescriptions = Object.keys(prescriptionsData).map((key) => ({
+          id: key,
+          ...prescriptionsData[key],
+        }));
+        setPrescriptions(formattedPrescriptions);
+      } else {
+        setPrescriptions([]);
+      }
+    });
+    return () => off(userPrescriptionsRef); // Unsubscribe from this ref's updates
   };
 
   return (
@@ -116,60 +151,65 @@ function CompatabilityChecker() {
         <Typography variant="h4" gutterBottom>
           Compatible with Current Prescriptions?
         </Typography>
-        {prescriptions.map((p) => (
-          <Accordion
-            key={p.id}
-            expanded={p.expanded}
-            onChange={() => handlePanelClick(p.id)}
-            className='panel'
-          >
-            {/* Unexpanded panel info */}
-            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls={`panel${p.id}bh-content`} id={p.id}>
-              <Grid container spacing={2} alignItems="center">
-                <Grid item>
-                  <Box className='compatible-icon-wrapper'>
-                    {compatibleIcons[p.compatible]}
-                  </Box>
+        {prescriptions ?
+          <Typography variant="h6" gutterBottom>
+            Nothing here!
+          </Typography>
+        :
+          prescriptions.map((p) => (
+            <Accordion
+              key={p.id}
+              expanded={p.expanded}
+              onChange={() => handlePanelClick(p.id)}
+              className='panel'
+            >
+              {/* Unexpanded panel info */}
+              <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls={`panel${p.id}bh-content`} id={p.id}>
+                <Grid container spacing={2} alignItems="center">
+                  <Grid item>
+                    <Box className='compatible-icon-wrapper'>
+                      {compatibleIcons[p.compatible]}
+                    </Box>
+                  </Grid>
+                  <Grid item>
+                    <Box component="img" alt={p.name} src={p.imageUrl} className='panel-image'></Box>
+                  </Grid>
+                  <Grid item xs>
+                    <Typography variant="h6" sx={{ width: '90%', flexShrink: 0 }}>
+                      {p.name}
+                    </Typography>
+                    <Typography sx={{ color: 'text.secondary' }}>Added: {p.dateAdded}</Typography>
+                  </Grid>
                 </Grid>
-                <Grid item>
-                  <Box component="img" alt={p.name} src={p.imageUrl} className='panel-image'></Box>
-                </Grid>
-                <Grid item xs>
-                  <Typography variant="h6" sx={{ width: '90%', flexShrink: 0 }}>
-                    {p.name}
-                  </Typography>
-                  <Typography sx={{ color: 'text.secondary' }}>Added: {p.dateAdded}</Typography>
-                </Grid>
-              </Grid>
-            </AccordionSummary>
+              </AccordionSummary>
 
-            {/* Drug Details */}
-            <AccordionDetails>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <Typography>
-                    Dosage: {p.dosage}
-                  </Typography>
+              {/* Drug Details */}
+              <AccordionDetails>
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <Typography>
+                      Dosage: {p.dosage}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography>
+                      Frequency: {p.frequency}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography>
+                      Duration: {p.duration}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography>
+                      Compatability Details: {p.compatibleDetails}
+                    </Typography>
+                  </Grid>
                 </Grid>
-                <Grid item xs={12}>
-                  <Typography>
-                    Frequency: {p.frequency}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography>
-                    Duration: {p.duration}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography>
-                    Compatability Details: {p.compatibleDetails}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </AccordionDetails>
-          </Accordion>
-        ))}
+              </AccordionDetails>
+            </Accordion>
+          ))}
       </Container>
     </>
   );

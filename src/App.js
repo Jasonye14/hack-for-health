@@ -27,7 +27,7 @@ function RoutesContent() {
       <Route path='/signup' element={<Signup />} />
       <Route path='/login' element={<Login />} />
       <Route path='/dashboard' element={  <Dashboard/> } />
-      <Route path='/compatability-checker' element={<ProtectedRoute>  <Checker/> </ProtectedRoute>} />
+      <Route path='/compatability-checker' element={  <Checker/>} />
       <Route path='/gemini-chat-bot' element={<ProtectedRoute>  <ChatBotPage/> </ProtectedRoute>} />
       <Route path='/history' element={<ProtectedRoute > <History/> </ProtectedRoute>} />
       <Route path='/settings' element={<ProtectedRoute> <Settings/>  </ProtectedRoute>} />

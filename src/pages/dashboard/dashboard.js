@@ -241,7 +241,7 @@ function Dashboard() {
   const isHealthcareRelated = async (term) => {
     if (!term.trim()) return false; // Early return if the term is empty
 
-    const prompt = `Is "${term}" related to healthcare, such as a medication, food item, or other healthcare-related products? Answer 'yes' or 'no'. If you don't know the word, answer 'no'. If the term is too broad, such as food and medication, also answer 'no'.`;
+    const prompt = `Is "${term}" related to healthcare, such as a medication, or other healthcare-related products? Answer 'yes' or 'no'. If you don't know the word, answer 'no'. If the term is too broad, such as food and medication, also answer 'no'.`;
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-pro" });
       const result = await model.generateContent(prompt);
@@ -268,7 +268,7 @@ function Dashboard() {
     // Then, check if the term is healthcare-related
     const isValid = await isHealthcareRelated(newPrescription.name);
     if (!isValid) {
-      showSnackbar("The term entered is not recognized as healthcare-related. Please enter a valid medication, food item, or healthcare product.");
+      showSnackbar("The term entered is not recognized as healthcare-related. Please enter a valid medication, or healthcare product.");
       return;
     }
 

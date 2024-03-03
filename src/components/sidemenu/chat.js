@@ -11,6 +11,15 @@ const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [showPrompts, setShowPrompts] = useState(true); 
+
+   // Predefined prompts related to health services
+   const predefinedPrompts = [
+    { title: "Check Drug Compatibility", prompt: "Check if drug A is compatible with drug B" },
+    { title: "Food and Drug Interactions", prompt: "Can I eat food X while taking drug Y?" },
+    { title: "Dosage Recommendations", prompt: "Recommended dosage for drug Z for condition C" },
+    { title: "General Health Advice", prompt: "General advice on managing condition D with medication E" },
+  ];
 
   const genAI = new GoogleGenerativeAI("AIzaSyDilnhNZuB5EDltsTx2JgnnvsUg0mkPa1E");
 

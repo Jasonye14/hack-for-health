@@ -77,7 +77,7 @@ const SideMenu = () => {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      navigate('/home'); // Redirect to login page after logout
+      navigate('/'); // Redirect to home page after logout
     } catch (error) {
       console.error("Logout Error:", error);
     }

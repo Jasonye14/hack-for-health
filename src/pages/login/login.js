@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth } from '../../firebase/firebaseConfig'; // Adjust this path as needed
+import { auth} from '../../firebase/firebaseConfig'; // Adjust this path as needed
+import { getDatabase, ref, set} from "firebase/database";
 import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
 import { Button, TextField, Container, Typography, Box, Grid, Link, useTheme, Toolbar, IconButton, Drawer, AppBar } from '@mui/material';
 import { styled} from '@mui/system';
@@ -13,6 +14,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const database = getDatabase();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -21,12 +23,16 @@ const Login = () => {
       navigate('/dashboard'); // Adjust this as needed
     } catch (error) {
       setError('');
-      if (error.code === 'auth/user-not-found') {
-        setError('Account not found. Please check your email address.');
-      } else if (error.code === 'auth/wrong-password') {
-        setError('Incorrect password. Please try again.');
-      } else {
-        setError('Failed to log in. Please try again later.');
+      switch (error.code) {
+        case 'auth/user-not-found':
+          setError('Account not found. Please check your email address.');
+          break;
+        case 'auth/wrong-password':
+          setError('Incorrect password. Please try again.');
+          break;
+        default:
+          setError('Failed to log in. Please try again later.');
+          break;
       }
     }
   };
@@ -34,10 +40,28 @@ const Login = () => {
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Extract name and photo URL
+      const fullName = user.displayName || "";
+      const names = fullName.split(' ');
+      const firstName = names[0] || "";
+      const lastName = names.slice(1).join(' ') || "";
+
+      // Save user info in Realtime Database
+      const usersRef = ref(database, 'users/' + user.uid);
+      await set(usersRef, {
+        email: user.email,
+        firstName: firstName,
+        lastName: lastName,
+        profilePicture: user.photoURL,
+      });
+
       navigate('/dashboard');
     } catch (error) {
       console.error(error);
+      setError('Google sign-in failed. Please try again.');
     }
   };
 

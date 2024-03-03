@@ -5,7 +5,7 @@ import {
   AccordionDetails,Grid,
   Box,TextField
 } from '@mui/material';
-// import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Icons
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -17,7 +17,7 @@ import PendingIcon from '@mui/icons-material/Pending';
 // Custom Components
 import '../dashboard/dashboard.css';
 import SideMenu from '../../components/sidemenu/SideMenu';
-// import CheckCompatibleGemini from '../../functions/gemini_compatible_checker';
+import CheckCompatibleGemini from '../../functions/gemini_compatible_checker';
 
 // Fake data
 import fakePrescriptions from '../dashboard/fake_data';
@@ -30,41 +30,57 @@ const compatibleIcons = {
   'pending': <PendingIcon className='pcompatible-icon'/>
 }
 
-// const endPrompt = "? Give a single response answer 'yes', 'no', 'maybe' in lowercase."
-//                 + "If the object given isn't recognized, reply with 'maybe' and give a "
-//                 + "explanation as described in the next sentence. If 'no' or 'maybe', "
-//                 + "add colon, then a small description why. DON'T give anything else.";
+const endPrompt = "Analyze the compatibility of the following prescriptions with the given item/object. For each prescription provided, respond with a single word: 'yes', 'no', or 'maybe', all in lowercase. Separate your responses for each prescription with a vertical bar '|'. If a given item isn't recognized as a prescription or food or if there's any uncertainty, respond with 'maybe', followed by a colon and a brief yet comprehensive explanation. In cases where the answer is 'no' or 'maybe', similarly provide a colon and then detail the reasoning in a concise manner. Do not include any additional information beyond these instructions. It's imperative to offer a response and an explanation for every drug or prescription mentioned. The prescriptions are as follows: ";
 
 function CompatabilityChecker() {
-  // const genAI = new GoogleGenerativeAI("AIzaSyDilnhNZuB5EDltsTx2JgnnvsUg0mkPa1E");
+  const genAI = new GoogleGenerativeAI("AIzaSyDilnhNZuB5EDltsTx2JgnnvsUg0mkPa1E");
   const [prescriptions, setPrescriptions] = useState(fakePrescriptions);
   const [geminiResponse, setGeminiResponse] = useState(null);
+  const [searchText, setSearchText] = useState("");
+
+  // Function to update the state based on text field input
+  const handleTextFieldChange = (event) => {
+    setSearchText(event.target.value);
+  };
 
   // Check compatability w/ Gemini
-  // const checkCompatability = (newPrescID, newPrescName, oldPrescArray) => {
-  //   let prompt = `Is medicine ${newPrescName} compatible with ` + oldPrescArray.join(", ") + endPrompt;
-  //   console.log(prompt)
-  //   CheckCompatibleGemini(genAI, prompt).then((res) => {
-  //     let responses = res.split(":");
-  //     setGeminiResponse([newPrescID, ...responses]);
-  //   });
-  // }
+  const checkCompatability = async (prescNames) => {
+    let prompt = `Given item: ${searchText}.` + endPrompt + prescNames.join(", ");
+    console.log(prompt);
+    setSearchText("");
+    let res = await CheckCompatibleGemini(genAI, prompt)
+    let responses = res.replace(/[\r\n]+/g, '').split("|"); // NEED to trim
+    console.log(responses);
+    setGeminiResponse(responses);
+  }
+
+  const handleSearch = (event) => {
+    event.preventDefault();
+    const prescNames = []
+    for (let i = 0; i < prescriptions.length; i++) {
+      prescNames.push(prescriptions[i].name)
+    }
+    let changedPrescriptions = [...prescriptions] // NEED spread operator (need to make copy)
+    setPrescriptions(changedPrescriptions.map(p => ({
+      ...p,
+      compatible: 'pending'
+    })));
+    checkCompatability(prescNames);
+  }
 
   useEffect(() => {
     console.log(prescriptions);
     if (geminiResponse) {
       console.log(geminiResponse);
       let changedPrescriptions = [...prescriptions] // NEED spread operator (need to make copy)
-      const prescToModify = changedPrescriptions.find(p => p.id === geminiResponse[0]);
-      if (prescToModify) {
-        prescToModify['compatible'] = geminiResponse[1]; // 'yes', 'no', 'maybe'
-      }
-
-      if (geminiResponse.length > 2) {
-        prescToModify['comptatibleDetails'] = geminiResponse[2]; // detailed explanation of compatability
-      }
-      
-      setPrescriptions(changedPrescriptions);
+      setPrescriptions(changedPrescriptions.map((p, index) => {
+        const responses = geminiResponse[index].trim().split(":");
+        p.compatible = responses[0].trim();
+        if (responses.length > 1) {
+          p.compatibleDetails = responses[1];
+        }
+        return p;
+      }));
       setGeminiResponse(null);
     }
   }, [prescriptions, geminiResponse]);
@@ -85,15 +101,21 @@ function CompatabilityChecker() {
         <Typography variant="h2" gutterBottom>
           Compatability Checker 
         </Typography>
+        <form onSubmit={handleSearch} noValidate>
+          <TextField
+            id="outlined-search"
+            label="Search Here..."
+            type="search"
+            fullWidth
+            sx={{mb: 4}}
+            value={searchText}
+            onChange={handleTextFieldChange}
+          />
+        </form>
+
         <Typography variant="h4" gutterBottom>
-          Current Prescriptions
+          Compatible with Current Prescriptions?
         </Typography>
-        <TextField
-          id="outlined-search"
-          label=""
-          type="search"
-          fullWidth
-        />
         {prescriptions.map((p) => (
           <Accordion
             key={p.id}
@@ -141,7 +163,7 @@ function CompatabilityChecker() {
                 </Grid>
                 <Grid item xs={12}>
                   <Typography>
-                    Compatability Details: {p.compatibleDetails ?? "Nothing here..."}
+                    Compatability Details: {p.compatibleDetails}
                   </Typography>
                 </Grid>
               </Grid>

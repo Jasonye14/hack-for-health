@@ -3,7 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { auth} from '../../firebase/firebaseConfig'; // Adjust this path as needed
 import { getDatabase, ref, set, get} from "firebase/database";
 import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
-import { Button, TextField, Container, Typography, Box, Grid, Link } from '@mui/material';
+import { Button, TextField, Container, Typography, Box, Grid, Link, useTheme, Toolbar, IconButton, Drawer, AppBar } from '@mui/material';
+import { styled} from '@mui/system';
+import MenuIcon from '@mui/icons-material/Menu';
+
+
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -73,21 +77,102 @@ const Login = () => {
 };
 
 
+  //THIS SECTION IS KEVIN CODE. IT IS FOR THE BAR MENU AND THE SCROLL TO TOP FUNCTION
+  const theme = useTheme();
+
+  const [state, setState] = React.useState({
+    mobileView: false,
+    drawerOpen: false,
+  });
+
+  const { mobileView, drawerOpen } = state;
+
+  React.useEffect(() => {
+    const setResponsiveness = () => {
+      return window.innerWidth < 600
+        ? setState((prevState) => ({ ...prevState, mobileView: true }))
+        : setState((prevState) => ({ ...prevState, mobileView: false }));
+    };
+
+    setResponsiveness();
+    window.addEventListener("resize", () => setResponsiveness());
+  }, []);
+
+  const HoverButton = styled(Button)(({ theme }) => ({
+    '&:hover': {
+      backgroundColor: '#90caf9',
+      color: 'white',
+    },
+  }));
+
+  const handleHomeClick = async () => {
+    navigate('/');
+  };
+
+  const displayDesktop = () => {
+    return (
+      <Toolbar>
+        <HoverButton color="inherit" style={{ color: "white", fontSize: "1.2rem" }} onClick={handleHomeClick}>
+          Home
+        </HoverButton>
+      </Toolbar>
+    );
+  };
+
+  const displayMobile = () => {
+    const handleDrawerOpen = () =>
+      setState((prevState) => ({ ...prevState, drawerOpen: true }));
+    const handleDrawerClose = () =>
+      setState((prevState) => ({ ...prevState, drawerOpen: false }));
+
+    return (
+      <Toolbar>
+        <IconButton
+          {...{
+            edge: "start",
+            color: "inherit",
+            "aria-label": "menu",
+            "aria-haspopup": "true",
+            onClick: handleDrawerOpen,
+          }}
+        >
+          <MenuIcon />
+        </IconButton>
+
+        <Drawer
+          {...{
+            anchor: "left",
+            open: drawerOpen,
+            onClose: handleDrawerClose,
+          }}
+        >
+        </Drawer>
+
+        
+      </Toolbar>
+    );
+  };
+
   return (
-    <Container>
+    <Container style={{ width: '100%', height: '100vh' }}>
+      <AppBar position="static" style={{ backgroundColor: theme.palette.background.default }} elevation={0}>
+          <Toolbar style={{ padding: '20px' }}>
+            <Typography variant="h3" component="div" style={{ flexGrow: 1, color: 'white' }} >
+              PillPair
+            </Typography>
+            {mobileView ? displayMobile() : displayDesktop()}
+          </Toolbar>
+        </AppBar>
       <Box sx={{ marginTop: 10, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Grid container>
           <Grid item xs>
-            <Link href='/' variant="body10">
-              Go back 
-            </Link>
           </Grid>
         </Grid>
       </Box>
       <Container maxWidth="xs">
-        <Box sx={{ marginTop: 14, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <Typography component="h1" variant="h5">
-            Login
+        <Box sx={{ marginTop: 0, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Typography component="h1" variant="h4">
+            LOGIN
           </Typography>
           <Box component="form" onSubmit={handleLogin} noValidate sx={{ mt: 1 }}>
             <TextField
@@ -138,22 +223,20 @@ const Login = () => {
             >
               Sign in with Google
             </Button>
-
-            <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
+            <Box display="flex" justifyContent="center">
+              <Typography variant="body1">
+                <Link href='\'> 
+                Forgot password?
                 </Link>
-              </Grid>
-            </Grid>
-
-            <Grid container>
-              <Grid item xs>
-                <Link href='\signup' variant="body2">
-                  Do not have an account?
+              </Typography>
+            </Box>
+            <Box display="flex" justifyContent="center">
+              <Typography variant="body1">
+                <Link href='\signup'> 
+                  No account? Sign up here.
                 </Link>
-              </Grid>
-            </Grid>
+              </Typography>
+            </Box>
           </Box>
         </Box>
       </Container>

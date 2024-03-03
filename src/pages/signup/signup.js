@@ -100,6 +100,13 @@ const Signup = () => {
 };
 
 
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSnackbar(false);
+  };
+
   //THIS SECTION IS KEVIN CODE. IT IS FOR THE BAR MENU AND THE SCROLL TO TOP FUNCTION
   const theme = useTheme();
 
@@ -169,27 +176,11 @@ const Signup = () => {
             onClose: handleDrawerClose,
           }}
         >
-          {/* <List>
-            {['Home', 'About', 'Contact', 'Credits'].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemText primary={text} />
-              </ListItem>
-            ))}
-          </List> */}
         </Drawer>
 
         
       </Toolbar>
     );
-  };
-
-
-
-  const handleCloseSnackbar = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setOpenSnackbar(false);
   };
 
   return (
@@ -210,7 +201,7 @@ const Signup = () => {
         </Box>
         <Container sx={{ marginTop: -7, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
           <Box sx={{ width: '100%', maxWidth: 450, textAlign: 'center' }}>
-            <Typography variant="h4" sx={{ mb: 2 }}>Sign Up</Typography>         
+            <Typography variant="h4" sx={{ mb: 2 }}>SIGN UP</Typography>         
             <Box component="form" onSubmit={handleSignup} noValidate>
               <TextField
                 fullWidth

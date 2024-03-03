@@ -11,7 +11,6 @@ const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState(null);
-  const [showPrompts, setShowPrompts] = useState(true); 
   const [promptSelected, setPromptSelected] = useState(false);
 
    // Predefined prompts related to health services
@@ -91,14 +90,14 @@ const Chat = () => {
     }
   };
 
-  const handleInputChange = (event) => setInput(event.target.value);
+  // const handleInputChange = (event) => setInput(event.target.value);
 
-  const handleKeyPress = (event) => {
-    if (event.key === 'Enter' && !loading) {
-      sendMessage(input);
-      event.preventDefault();
-    }
-  };
+  // const handleKeyPress = (event) => {
+  //   if (event.key === 'Enter' && !loading) {
+  //     sendMessage(input);
+  //     event.preventDefault();
+  //   }
+  // };
 
   const fetchMessages = () => {
     if (!userId) return; // Early return if userId is not set

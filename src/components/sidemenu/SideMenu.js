@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Drawer, Button, List, ListItem, ListItemIcon, ListItemText, Avatar, Typography, Box, Divider } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { auth } from '../../firebase/firebaseConfig';
-import { getDatabase, ref, set, get, onValue } from "firebase/database";
+import { getDatabase, ref, onValue } from "firebase/database";
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import PharmacyIcon from '@mui/icons-material/LocalPharmacy';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';

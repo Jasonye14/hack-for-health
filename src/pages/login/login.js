@@ -15,7 +15,9 @@ const Login = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const database = getDatabase();
+  // eslint-disable-next-line
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  // eslint-disable-next-line
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
   const handleLogin = async (e) => {

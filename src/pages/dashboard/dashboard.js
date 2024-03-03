@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Container,Typography,
-  Accordion,AccordionSummary,
-  AccordionDetails,Grid,Button,
+  Container, Typography,
+  Accordion, AccordionSummary,
+  AccordionDetails, Grid, Button,
   Box, Dialog, DialogTitle,
   DialogActions, DialogContent, TextField
 } from '@mui/material';
@@ -22,9 +22,10 @@ import { onAuthStateChanged } from 'firebase/auth';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PharmacyIcon from '@mui/icons-material/LocalPharmacy';
 import compatibleIcons from '../../components/compatibleIcon/compatibleIcon';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 
-const endPrompt = `? Give a single response answer 'yes', 'no', 'maybe' in lowercase considering all the options. If the medicine isn't recognized, reply with 'maybe' and give a explanation as described in the next sentence. If 'no' or 'maybe', add colon, then a small description why. DON'T give anything else.`;
+const endPrompt = `? Give a single response answer 'yes', 'no', 'maybe' in lowercase considering all the options. If the medicine isn't recognized, reply with 'maybe' and give a explanation as described in the next sentence. If 'no' or 'maybe', add colon, then a small, detailed explanation why. You must consider whether the given medicine is actually a medicine and whether the thing being compared to is a medicine. DON'T give anything else.`;
 
 function Dashboard() {
   const genAI = new GoogleGenerativeAI("AIzaSyDilnhNZuB5EDltsTx2JgnnvsUg0mkPa1E");
@@ -36,7 +37,7 @@ function Dashboard() {
     dosage: '',
     frequency: '',
     duration: '',
-    dateAdded:'',
+    dateAdded: '',
     expanded: false,
     compatible: 'pending',
     compatibleDesc: ''
@@ -51,7 +52,7 @@ function Dashboard() {
   };
 
   // Expand/shrink panel
-  const handlePanelClick = (prescID) => {    
+  const handlePanelClick = (prescID) => {
     let changedPrescriptions = [...prescriptions] // NEED spread operator (need to make copy)
     const prescToModify = changedPrescriptions.find(p => p.id === prescID);
     if (prescToModify) {
@@ -72,12 +73,23 @@ function Dashboard() {
 
   // Check compatability w/ Gemini
   const checkCompatability = async () => {
+    let response = "";
+
     const currPrescNames = [...prescriptions.map(p => p.name)]
-    let prompt = `Is medicine ${newPrescription.name} compatible with ` + currPrescNames.join(", ") + endPrompt;
-    console.log(prompt)
-    const res = await CheckCompatibleGemini(genAI, prompt);
-    const responses = res.replace(/[\r\n]+/g, '').split(":");
-    return responses;
+    for (let i = 0; i < currPrescNames.length; i++) {
+      let prompt = `Is medicine '${newPrescription.name}' compatible with '${currPrescNames[i]}'` + endPrompt;
+      console.log(prompt);
+      let res = await CheckCompatibleGemini(genAI, prompt)
+      response = res.replace(/[\r\n]+/g, '').split(":"); // NEED to trim
+      if (response[0] === 'no' || response[1] === 'maybe') {
+        return response
+      }
+    }
+    // let prompt = `Is medicine '${newPrescription.name}' compatible with ` + currPrescNames.join(", ") + endPrompt;
+    // console.log(prompt)
+    // const res = await CheckCompatibleGemini(genAI, prompt);
+    // const responses = res.replace(/[\r\n]+/g, '').split(":");
+    // return responses;
   }
 
   // POST prescription to Firebase
@@ -109,7 +121,7 @@ function Dashboard() {
     });
   }
 
-  // Retrieve data from 
+  // Retrieve data from firebase
   const updatePrescriptions = () => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -143,7 +155,7 @@ function Dashboard() {
   const fetchPrescriptions = (uid) => {
     const db = getDatabase();
     const userPrescriptionsRef = ref(db, `/users/${uid}/prescriptions`);
-    
+
     onValue(userPrescriptionsRef, (snapshot) => {
       const prescriptionsData = snapshot.val();
       if (prescriptionsData) {
@@ -160,11 +172,51 @@ function Dashboard() {
   };
 
 
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [deletePrescriptionId, setDeletePrescriptionId] = useState(null);
+
+  // Open the confirmation dialog
+  const handleDeleteConfirmation = (prescID) => {
+    setDeletePrescriptionId(prescID);
+    setOpenDeleteDialog(true);
+  };
+
+  // Close the confirmation dialog without deleting
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+    setDeletePrescriptionId(null);
+  };
+
+  // Handle actual deletion
+  const handleDeletePrescription = () => {
+    if (!deletePrescriptionId) return;
+    const db = getDatabase();
+    const prescriptionRef = ref(db, `/users/${userId}/prescriptions/${deletePrescriptionId}`);
+    set(prescriptionRef, null) // Deletes the prescription from Firebase
+      .then(() => {
+        console.log('Prescription deleted successfully.');
+        handleCloseDeleteDialog(); // Close the dialog on success
+      })
+      .catch((error) => {
+        console.error('Error deleting prescription: ', error);
+      });
+  };
+
+  const isFormValid = () => {
+    return newPrescription.name.trim() !== '' &&
+      newPrescription.dosage.trim() !== '' &&
+      newPrescription.frequency.trim() !== '' &&
+      newPrescription.duration.trim() !== '';
+  };
+
+
+
+
 
   return (
     <>
       <SideMenu />
-      <Container maxWidth="md" sx={{ mt: 0}}>
+      <Container maxWidth="md" sx={{ mt: 0 }}>
         <Typography variant="h2" gutterBottom>
           Prescription Tracker
         </Typography>
@@ -225,6 +277,15 @@ function Dashboard() {
                     Compatability Details: {p.compatibleDesc ?? "Nothing here..."}
                   </Typography>
                 </Grid>
+                <Grid item xs={12}>
+                  <Button
+                    startIcon={<DeleteIcon />}
+                    onClick={() => handleDeleteConfirmation(p.id)}
+                    color="error"
+                  >
+                    Delete
+                  </Button>
+                </Grid>
               </Grid>
             </AccordionDetails>
           </Accordion>
@@ -241,43 +302,67 @@ function Dashboard() {
             type="text"
             fullWidth
             variant="outlined"
+            required // Make this field required
             value={newPrescription.name}
             onChange={handleChange('name')}
           />
           <TextField
             margin="dense"
             id="dosage"
-            label="Dosage"
+            label="Dosage (mg)" // Added unit
             type="text"
             fullWidth
             variant="outlined"
+            required
             value={newPrescription.dosage}
             onChange={handleChange('dosage')}
           />
           <TextField
             margin="dense"
             id="frequency"
-            label="Frequency"
+            label="Frequency (per day)" // Clarified instruction
             type="text"
             fullWidth
             variant="outlined"
+            required
             value={newPrescription.frequency}
             onChange={handleChange('frequency')}
           />
           <TextField
             margin="dense"
             id="duration"
-            label="Duration"
+            label="Duration (days)" // Clarified instruction
             type="text"
             fullWidth
             variant="outlined"
+            required
             value={newPrescription.duration}
             onChange={handleChange('duration')}
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button onClick={handleAddEntry}>Add</Button>
+          <Button
+            onClick={handleAddEntry}
+            variant="contained"
+            color="primary"
+            disabled={!isFormValid()} // Button is disabled if form is not valid
+          >
+            Add
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+
+
+      <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to delete this prescription?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog}>Cancel</Button>
+          <Button onClick={handleDeletePrescription} color="error">Delete</Button>
         </DialogActions>
       </Dialog>
     </>

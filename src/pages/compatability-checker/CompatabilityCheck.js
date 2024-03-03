@@ -21,12 +21,13 @@ import CheckCompatibleGemini from '../../functions/gemini_compatible_checker';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import compatibleIcons from '../../components/compatibleIcon/compatibleIcon';
 
-const endPrompt = "Analyze the compatibility of the given item/object with medicines given. For each prescription provided, respond with a single word: 'yes', 'no', or 'maybe', all in lowercase. Separate your responses for each prescription with a vertical bar '|'. If a given item isn't recognized as a prescription or food or if there's any uncertainty, respond with 'maybe', followed by a colon and a brief yet comprehensive explanation. In cases where the answer is 'no' or 'maybe', similarly provide a colon and then detail the reasoning in a concise manner. Do not include any additional information beyond these instructions. It's imperative to offer a response and an explanation for every drug or prescription mentioned. The prescriptions are as follows: ";
+const endPrompt = `? Give a single response answer 'yes', 'no', 'maybe' in lowercase considering all the options. If the item/food/medicine isn't recognized, reply with 'maybe' and give a explanation as described in the next sentence. If 'no' or 'maybe', add colon, then a small, detailed explanation why. DON'T give anything else.`;
 
 function CompatabilityChecker() {
   const genAI = new GoogleGenerativeAI("AIzaSyDilnhNZuB5EDltsTx2JgnnvsUg0mkPa1E");
   const [prescriptions, setPrescriptions] = useState([]);
   const [searchText, setSearchText] = useState("");
+  // eslint-disable-next-line
   const [userId, setUserId] = useState(null);
 
   // Function to update the state based on text field input
@@ -46,14 +47,16 @@ function CompatabilityChecker() {
 
   // Check compatability w/ Gemini
   const checkCompatability = async (prescNames) => {
-    let prompt = `Given item: ${searchText}.` + endPrompt + prescNames.join(", ");
-    console.log(prompt);
-    setSearchText("");
-    let res = await CheckCompatibleGemini(genAI, prompt)
-    let responses = res.replace(/[\r\n]+/g, '').split("|"); // NEED to trim
-    console.log(responses);
+    let responses = []
+    for (let i = 0; i < prescNames.length; i++) {
+      let prompt = `Is item/food/medicine '${searchText}' compatible with '${prescNames[i]}'` + endPrompt;
+      console.log(prompt);
+      setSearchText("");
+      let res = await CheckCompatibleGemini(genAI, prompt)
+      responses.push(res.replace(/[\r\n]+/g, '')); // NEED to trim
+      console.log(responses);
+    }
 
-    console.log(responses);
     let changedPrescriptions = [...prescriptions] // NEED spread operator (need to make copy)
     setPrescriptions(changedPrescriptions.map((p, index) => {
       const vals = responses[index].trim().split(":");
@@ -65,6 +68,7 @@ function CompatabilityChecker() {
     }));
   }
 
+  // Handle compatability search
   const handleSearch = (event) => {
     event.preventDefault();
     const prescNames = []
@@ -76,9 +80,9 @@ function CompatabilityChecker() {
       ...p,
       compatible: 'pending'
     })));
+    console.log(prescNames)
     checkCompatability(prescNames);
   }
-
 
   // Load data from Firebase
   useEffect(() => {

@@ -11,6 +11,10 @@ npm i react-router-dom
 npm i @google/generative-ai
 npm i @mui/styles
 npm install react-scroll
+npm install react-responsive-carousel
+npm install react-slick slick-carousel
+npm install react-material-ui-carousel --save
+
 
 
 ## Available Scripts

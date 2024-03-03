@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { AppBar, Toolbar, Typography, Button, CssBaseline, IconButton, Drawer, List, ListItem, ListItemText, Grid, Card, CardContent, CardMedia } from '@mui/material'; 
+import { AppBar, Toolbar, Typography, Button, CssBaseline, IconButton, Drawer, List, ListItem, ListItemText, Grid, Card, CardContent } from '@mui/material'; 
 import MenuIcon from '@mui/icons-material/Menu';
 import { styled, Box } from '@mui/system';
 import video from '../../videos/ocean2.mp4';
@@ -199,9 +199,9 @@ const Home = () => {
               At PillPair, we're dedicated to empowering individuals with the knowledge they need to make informed decisions about their medications. Our innovative platform provides a comprehensive drug interaction checker designed to highlight potential risks and interactions between medications, supplements, and even food. By leveraging cutting-edge technology and up-to-date medical information, we aim to reduce the complexity of medication management, making it easier for everyone to understand how different substances interact within their bodies. Whether you're managing multiple prescriptions or simply looking to optimize your health regimen, PillPair is your trusted partner in navigating the intricate world of medication safety and efficacy. Join us in our mission to promote better health outcomes through informed medication management.          </Typography>
           </div>
           <Carousel navButtonsAlwaysVisible>
-            <img src={pillPic} alt="Image 1" style={{ height: '700px', width: '100%', objectFit: 'cover'}} />
-            <img src={doctorPic} alt="Image 2" style={{ height: '700px', width: '100%', objectFit: 'cover' }} />
-            <img src={heartPic} alt="Image 3" style={{ height: '700px', width: '100%', objectFit: 'cover' }} />
+            <img src={pillPic} alt="Pills" style={{ height: '700px', width: '100%', objectFit: 'cover'}} />
+            <img src={doctorPic} alt="Doctor" style={{ height: '700px', width: '100%', objectFit: 'cover' }} />
+            <img src={heartPic} alt="Sethoscope" style={{ height: '700px', width: '100%', objectFit: 'cover' }} />
           </Carousel>
           <div id="contact" style={{ backgroundColor: '#f5f5f5', padding: '40px' }}>
               <Typography variant="h2" component="h2" gutterBottom style={{ color: '#000' }}>

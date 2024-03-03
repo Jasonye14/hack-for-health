@@ -101,8 +101,6 @@ function Dashboard() {
       console.log(res)
       let response
       response = res.trim().replace(/[\r\n]+/g, '').split(":"); // NEED to trim
-      if (response[0] === 'no' || response[1] === 'maybe') {
-      console.log(response[0])
       if (response[0] === 'no' || response[0] === 'maybe') {
         return response
       }

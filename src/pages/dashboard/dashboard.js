@@ -126,7 +126,7 @@ function Dashboard() {
       }
 
       if (geminiResponse.length > 2) {
-        prescToModify['comptatibleDetails'] = geminiResponse[2]; // detailed explanation of compatability
+        prescToModify['compatibleDetails'] = geminiResponse[2]; // detailed explanation of compatability
       }
       
       setPrescriptions(changedPrescriptions);

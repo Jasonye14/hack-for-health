@@ -62,6 +62,8 @@ function CompatabilityChecker() {
       p.compatible = vals[0]
       if (vals.length > 1) {
         p.compatibleDesc = vals[1];
+      } else {
+        p.compatibleDesc = "Nothing here...";
       }
       return p;
     }));

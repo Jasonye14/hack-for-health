@@ -194,7 +194,7 @@ const Home = () => {
             At PillPair, we're dedicated to empowering individuals with the knowledge they need to make informed decisions about their medications. Our innovative platform provides a comprehensive drug interaction checker designed to highlight potential risks and interactions between medications, supplements, and even food. By leveraging cutting-edge technology and up-to-date medical information, we aim to reduce the complexity of medication management, making it easier for everyone to understand how different substances interact within their bodies. Whether you're managing multiple prescriptions or simply looking to optimize your health regimen, PillPair is your trusted partner in navigating the intricate world of medication safety and efficacy. Join us in our mission to promote better health outcomes through informed medication management.          </Typography>
         </div>
         <div id="image" style={{ position: 'relative', zIndex: -1 }}>
-          <img src={image} alt="Background Image" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+          <img src={image} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
         <div id="contact" style={{ backgroundColor: '#f5f5f5', padding: '40px' }}>
             <Typography variant="h2" component="h2" gutterBottom style={{ color: '#000' }}>
@@ -213,7 +213,7 @@ const Home = () => {
                     <Box display="flex" justifyContent="center" alignItems="center">
                       <HomeIcon fontSize="large" />
                       <Typography variant="body1" style={{ marginLeft: 8 }}>
-                        123 Main St, Anytown, USA
+                        123 Main St, Bethlehem, PA, 18015
                       </Typography>
                     </Box>
                   </CardContent>

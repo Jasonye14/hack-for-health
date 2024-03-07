@@ -1,4 +1,4 @@
-# Getting Started with Create React App
+# Getting Started with PillPair
 
 Live site: https://hackforhealth.netlify.app/
 
